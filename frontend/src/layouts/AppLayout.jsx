@@ -87,11 +87,11 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-[-12px] right-10 flex items-center justify-end h-[90px] z-10" data-testid="header-alexis-logo-wrap">
+          <div className="absolute top-[-12px] right-10 flex items-center justify-end h-[90px] z-10 alexis-logo-wrap" data-testid="header-alexis-logo-wrap">
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/x0yzu0m5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2001_23_13%20AM.png"
               alt="ALEXIS logo"
-              className="h-[82px] w-auto object-contain opacity-100 visible alexis-logo-pulse" style={{ filter: "drop-shadow(0 10px 26px rgba(0,0,0,0.55))" }}
+              className="h-[82px] w-auto object-contain opacity-100 visible alexis-logo-img alexis-logo-pulse" style={{ filter: "drop-shadow(0 10px 26px rgba(0,0,0,0.55))" }}
               data-testid="header-alexis-logo"
             />
           </div>
