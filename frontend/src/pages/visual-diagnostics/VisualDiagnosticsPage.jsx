@@ -407,7 +407,7 @@ const VisualDiagnosticsPage = () => {
           </div>
 
           {/* Canvas display */}
-          <div className="flex-1 p-4 flex items-center justify-center bg-slate-950">
+          <div className="flex-1 p-4 flex items-center justify-center bg-slate-950" data-testid="visual-diagnostics-canvas">
             {isCameraActive ? (
               <video
                 ref={videoRef}
