@@ -413,7 +413,7 @@ const WiringUploadPage = () => {
             {/* Zoom & Page Controls */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1 bg-slate-800/80 rounded-lg p-1">
-                <Button variant="ghost" size="sm" onClick={handleZoomOut} className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-700">
+                <Button variant="ghost" size="sm" onClick={handleZoomOut} data-testid="wiring-upload-zoom-out" className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-700">
                   <ZoomOut className="h-4 w-4" />
                 </Button>
                 <span className="text-xs text-slate-400 w-12 text-center">{Math.round(scale * 100)}%</span>
