@@ -34,59 +34,25 @@
 }
 
 
-/* ALEXIS badge light sweep (blue left + red right) */
-.alexis-logo-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
+/* ALEXIS logo subtle police-light pulse (blue + red) */
+.alexis-logo-pulse {
+    animation: alexis-pulse 1.35s ease-in-out infinite;
+    filter:
+        drop-shadow(0 0 10px rgba(56, 189, 248, 0.35))
+        drop-shadow(0 0 10px rgba(248, 113, 113, 0.22));
 }
 
-.alexis-logo-wrap::before,
-.alexis-logo-wrap::after {
-    content: "";
-    position: absolute;
-    top: 50%;
-    height: 2px;
-    width: 56%;
-    transform: translateY(-50%);
-    filter: blur(0.2px);
-    opacity: 0.95;
-    pointer-events: none;
-}
-
-.alexis-logo-wrap::before {
-    left: -18px;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(56, 189, 248, 0.92), rgba(56, 189, 248, 0));
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.55);
-    animation: alexis-sweep-blue 2.8s ease-in-out infinite;
-}
-
-.alexis-logo-wrap::after {
-    right: -18px;
-    background: linear-gradient(270deg, rgba(0, 0, 0, 0), rgba(248, 113, 113, 0.9), rgba(248, 113, 113, 0));
-    box-shadow: 0 0 10px rgba(248, 113, 113, 0.45);
-    animation: alexis-sweep-red 2.8s ease-in-out infinite;
-}
-
-@keyframes alexis-sweep-blue {
+@keyframes alexis-pulse {
     0%, 100% {
-        transform: translateY(-50%) translateX(-8px);
-        opacity: 0.65;
+        opacity: 0.88;
+        filter:
+            drop-shadow(0 0 8px rgba(56, 189, 248, 0.22))
+            drop-shadow(0 0 8px rgba(248, 113, 113, 0.14));
     }
     50% {
-        transform: translateY(-50%) translateX(10px);
         opacity: 1;
-    }
-}
-
-@keyframes alexis-sweep-red {
-    0%, 100% {
-        transform: translateY(-50%) translateX(8px);
-        opacity: 0.55;
-    }
-    50% {
-        transform: translateY(-50%) translateX(-10px);
-        opacity: 1;
+        filter:
+            drop-shadow(0 0 16px rgba(56, 189, 248, 0.42))
+            drop-shadow(0 0 14px rgba(248, 113, 113, 0.28));
     }
 }
