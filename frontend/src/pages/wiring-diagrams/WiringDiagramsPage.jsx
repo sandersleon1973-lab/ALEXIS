@@ -9,7 +9,7 @@ const WiringDiagramsPage = () => {
     <div className="flex flex-col h-full text-slate-100">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-semibold tracking-wide text-slate-100">
+        <h1 className="text-3xl font-semibold tracking-wide text-slate-100" data-testid="wiring-diagrams-title">
           Wiring Diagrams
         </h1>
         <p className="mt-2 text-sm text-slate-300/90 max-w-2xl">
