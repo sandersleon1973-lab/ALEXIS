@@ -36,11 +36,11 @@ const AppLayout = () => {
         {/* Sidebar */}
         <aside className="w-[260px] bg-gradient-to-b from-slate-950/95 via-slate-950/90 to-black/95 border-r border-slate-500/40 relative flex flex-col" data-testid="sidebar">
           {/* Brand */}
-          <div className="p-2 border-b border-slate-500/30 flex items-start justify-start">
+          <div className="p-0 border-b border-slate-500/30 flex items-start justify-start">
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
-              className="h-[218px] w-[240px] object-contain sa-logo-img" style={{ paddingTop: "2px" }}
+              className="h-[218px] w-[252px] object-contain sa-logo-img" style={{ paddingTop: "0px", marginLeft: "6px", marginTop: "6px" }}
               data-testid="sidebar-sa-logo"
             />
           </div>
@@ -79,7 +79,7 @@ const AppLayout = () => {
         {/* Main content */}
         <main className="flex-1 relative bg-gradient-to-b from-slate-900/70 via-slate-950/80 to-black/95 px-10 pt-6 pb-8 flex flex-col min-h-0">
           {/* Top header brand band */}
-          <div className="absolute top-[-12px] left-10 flex items-center h-[90px] z-10" style={{ transform: "translateY(0px)" }}>
+          <div className="absolute top-[-12px] left-10 flex items-center h-[90px] z-10">
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
@@ -87,7 +87,7 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-[-12px] right-2 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(150px, 0px)" }}>
+          <div className="absolute top-[-12px] right-0 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(210px, 0px)" }}>
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
