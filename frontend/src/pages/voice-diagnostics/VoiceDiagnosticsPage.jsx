@@ -18,6 +18,8 @@ const VoiceDiagnosticsPage = () => {
   const [technicianTranscript, setTechnicianTranscript] = useState("");
   const [conversation, setConversation] = useState([]);
   const [sessionId, setSessionId] = useState(null);
+  const [initState, setInitState] = useState("INIT"); // INIT | LIVE | LISTENING | ANALYZING | SPEAKING | ERROR
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [status, setStatus] = useState("Initializing...");
