@@ -40,7 +40,7 @@ const AppLayout = () => {
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
-              className="h-[190px] w-full object-contain sa-logo-img" style={{ paddingTop: "2px" }}
+              className="h-[206px] w-full object-contain sa-logo-img" style={{ paddingTop: "2px" }}
               data-testid="sidebar-sa-logo"
             />
           </div>
@@ -79,7 +79,7 @@ const AppLayout = () => {
         {/* Main content */}
         <main className="flex-1 relative bg-gradient-to-b from-slate-900/70 via-slate-950/80 to-black/95 px-10 pt-6 pb-8 flex flex-col min-h-0">
           {/* Top header brand band */}
-          <div className="absolute top-[-10px] left-10 flex items-center h-[90px] z-10">
+          <div className="absolute top-[-6px] left-10 flex items-center h-[90px] z-10">
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
@@ -87,7 +87,7 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-1 right-10 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(6px, -10px)" }}>
+          <div className="absolute top-1 right-10 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(16px, -10px)" }}>
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
