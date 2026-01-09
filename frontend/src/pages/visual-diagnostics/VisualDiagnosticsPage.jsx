@@ -246,7 +246,8 @@ const VisualDiagnosticsPage = () => {
       setTranscript("");
       setStatus("ALEXIS is speaking...");
 
-      await speakResponse(chatData.response);
+      // Speak asynchronously so UI updates (chat bubble render) are not blocked
+      speakResponse(chatData.response);
     } catch (err) {
       setConversation(prev => [...prev, { role: "alexis", text: "Error: Could not process visual inspection request." }]);
       setStatus("LIVE - Visual Inspection");
