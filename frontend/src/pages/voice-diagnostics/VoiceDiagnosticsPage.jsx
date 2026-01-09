@@ -274,6 +274,7 @@ const VoiceDiagnosticsPage = () => {
       const alexisMessage = { role: "alexis", text: chatData.response };
       setConversation(prev => [...prev, alexisMessage]);
       setTechnicianTranscript("");
+      setInitState("SPEAKING");
       setStatus("ALEXIS is speaking...");
 
       // Speak asynchronously so UI updates (chat bubble render) are not blocked
