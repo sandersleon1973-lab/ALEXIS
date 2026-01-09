@@ -195,6 +195,20 @@ const VoiceDiagnosticsPage = () => {
     }
   };
 
+  const handleRetryConnection = () => {
+    voiceSessionInitPromise = null;
+    voiceCachedSessionId = null;
+    voiceGreetingSent = false;
+    greetedRef.current = false;
+    setSessionId(null);
+    setConversation([]);
+    setSttError(null);
+    setStatus("Initializing...");
+    setInitState("INIT");
+    initSession();
+  };
+
+
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
