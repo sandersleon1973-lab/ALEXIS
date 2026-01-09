@@ -196,7 +196,8 @@ const VoiceDiagnosticsPage = () => {
       setTechnicianTranscript("");
       setStatus("ALEXIS is speaking...");
 
-      await speakResponse(chatData.response);
+      // Speak asynchronously so UI updates (chat bubble render) are not blocked
+      speakResponse(chatData.response);
     } catch (err) {
       setConversation(prev => [...prev, { role: "alexis", text: "Error: Could not analyze symptoms. Please try again." }]);
       setStatus("LIVE - Symptom Diagnostics");
