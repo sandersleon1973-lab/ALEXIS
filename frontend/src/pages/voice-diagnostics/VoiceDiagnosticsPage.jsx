@@ -70,8 +70,28 @@ const VoiceDiagnosticsPage = () => {
 
   const initSession = async () => {
     try {
-      setStatus("Connecting...");
-      const loginRes = await fetch(`${API_URL}/api/auth/login`, {
+      // If we already have a cached session, reuse it immediately
+      if (voiceCachedSessionId) {
+        setSessionId(voiceCachedSessionId);
+        setStatus("LIVE - Symptom Diagnostics");
+        if (!voiceGreetingSent && !greetedRef.current) {
+          voiceGreetingSent = true;
+          greetedRef.current = true;
+          setConversation([
+            {
+              role: "alexis",
+              text: "I’m ready to help diagnose your vehicle issue. Describe the symptom you’re experiencing:\n\n• What is the vehicle doing (or not doing)?\n• When does it happen? (cold start, warm, under load, at speed)\n• How often? (always, intermittent, specific conditions)\n• Any warning lights, sounds, or smells?\n\nThe more detail you provide, the faster we can narrow the fault tree."
+            }
+          ]);
+        }
+        return;
+      }
+
+      // Deduplicate concurrent inits (StrictMode / remount)
+      if (!voiceSessionInitPromise) {
+        voiceSessionInitPromise = (async () => {
+          setStatus("Connecting...");
+          const loginRes = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Technician", email: "tech@alexis.local" })
