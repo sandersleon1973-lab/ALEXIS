@@ -33,6 +33,7 @@ const WiringDiagramsPage = () => {
             type="button"
             variant="outline"
             onClick={() => navigate("/wiring-diagrams/upload")}
+            data-testid="wiring-diagrams-upload-nav-button"
             className="h-10 px-6 rounded-full border-slate-500 bg-slate-900/90 text-xs tracking-[0.22em] uppercase text-slate-100 hover:bg-slate-800/90"
           >
             Upload Wiring PDF
