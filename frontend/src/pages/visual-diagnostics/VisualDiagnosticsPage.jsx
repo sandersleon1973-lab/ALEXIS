@@ -378,6 +378,7 @@ const VisualDiagnosticsPage = () => {
               <input
                 id="visual-file-input"
                 type="file"
+                data-testid="visual-diagnostics-file-input"
                 accept="image/*"
                 className="hidden"
                 onChange={handleFileChange}
