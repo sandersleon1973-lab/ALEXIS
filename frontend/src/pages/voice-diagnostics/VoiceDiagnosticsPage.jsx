@@ -103,8 +103,10 @@ const VoiceDiagnosticsPage = () => {
         setStatus("Offline");
       }
     } catch (err) {
+      if (err?.name === "AbortError") return;
       console.error("Session init error:", err);
       setStatus("Connection Failed");
+      setSttError("Connection failed. Please refresh and try again.");
     }
   };
 
