@@ -72,6 +72,7 @@ const VoiceDiagnosticsPage = () => {
 
   const initSession = async () => {
     try {
+      setInitState("INIT");
       // If we already have a cached session, reuse it immediately
       if (voiceCachedSessionId) {
         setSessionId(voiceCachedSessionId);
