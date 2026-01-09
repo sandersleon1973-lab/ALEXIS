@@ -87,7 +87,7 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-[-12px] right-0 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(180px, 0px)" }}>
+          <div className="absolute top-[-12px] right-0 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(228px, 0px)" }}>
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
