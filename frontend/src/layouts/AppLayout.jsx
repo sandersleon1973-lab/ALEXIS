@@ -40,7 +40,7 @@ const AppLayout = () => {
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
-              className="h-[218px] w-[252px] object-contain sa-logo-img" style={{ paddingTop: "0px", marginLeft: "6px", marginTop: "6px" }}
+              className="h-[218px] w-[252px] object-contain object-left-top sa-logo-img" style={{ paddingTop: "0px", marginLeft: "0px", marginTop: "0px" }}
               data-testid="sidebar-sa-logo"
             />
           </div>
@@ -87,7 +87,7 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-[-12px] right-0 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(120px, 0px)" }}>
+          <div className="absolute top-[-12px] right-0 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(180px, 0px)" }}>
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
