@@ -177,6 +177,7 @@ const VoiceDiagnosticsPage = () => {
 
       mediaRecorder.start();
       setIsRecording(true);
+      setInitState("LISTENING");
       setStatus("Listening... describe the symptom");
     } catch (err) {
       const name = err?.name;
