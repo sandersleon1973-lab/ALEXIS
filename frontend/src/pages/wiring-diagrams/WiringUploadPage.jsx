@@ -346,7 +346,7 @@ const WiringUploadPage = () => {
       {/* Compact Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-6 py-3 border-b border-slate-700/50 bg-slate-900/50">
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-semibold tracking-wide">Wiring Diagram Viewer</h1>
+          <h1 className="text-xl font-semibold tracking-wide" data-testid="wiring-upload-title">Wiring Diagram Viewer</h1>
           <span className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${
             sessionId ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
           }`}>
