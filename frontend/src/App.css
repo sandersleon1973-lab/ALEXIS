@@ -36,25 +36,4 @@
 }
 
 
-/* ALEXIS logo subtle police-light pulse (blue + red) */
-.alexis-logo-pulse {
-    animation: alexis-pulse 1.8s ease-in-out infinite;
-    filter:
-        drop-shadow(0 0 8px rgba(56, 189, 248, 0.22))
-        drop-shadow(0 0 8px rgba(248, 113, 113, 0.16));
-}
-
-@keyframes alexis-pulse {
-    0%, 100% {
-        opacity: 0.92;
-        filter:
-            drop-shadow(0 0 7px rgba(56, 189, 248, 0.18))
-            drop-shadow(0 0 7px rgba(248, 113, 113, 0.12));
-    }
-    50% {
-        opacity: 1;
-        filter:
-            drop-shadow(0 0 11px rgba(56, 189, 248, 0.28))
-            drop-shadow(0 0 10px rgba(248, 113, 113, 0.2));
-    }
-}
+/* (intentionally blank) */
