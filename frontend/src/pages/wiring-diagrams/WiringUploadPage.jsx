@@ -445,16 +445,14 @@ const WiringUploadPage = () => {
                 <Document
                   file={selectedFile}
                   onLoadSuccess={onDocumentLoadSuccess}
-                  onLoadError={onDocumentLoadError}
-                  loading={<div className="text-slate-500 text-sm">Loading PDF...</div>}
-                  error={<div className="text-red-400 text-sm">Failed to load PDF</div>}
+                  loading="Loading wiring diagram…"
+                  error="Failed to load wiring diagram"
                 >
-                  <Page 
-                    pageNumber={currentPage} 
+                  <Page
+                    pageNumber={currentPage}
                     scale={scale}
                     renderTextLayer={true}
                     renderAnnotationLayer={true}
-                    loading={<div className="text-slate-500 text-sm">Loading page...</div>}
                   />
                 </Document>
               </div>
