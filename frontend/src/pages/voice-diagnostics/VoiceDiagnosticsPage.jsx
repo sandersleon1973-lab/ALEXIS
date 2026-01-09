@@ -207,6 +207,7 @@ const VoiceDiagnosticsPage = () => {
   const processAudio = async (audioBlob) => {
     setIsProcessing(true);
     setSttError(null);
+    setInitState("ANALYZING");
     setStatus("Converting speech to text...");
     
     try {
