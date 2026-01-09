@@ -166,6 +166,20 @@ const VoiceDiagnosticsPage = () => {
       audioChunksRef.current = [];
 
 
+
+  const handleRetryConnection = () => {
+    voiceSessionInitPromise = null;
+    voiceCachedSessionId = null;
+    voiceGreetingSent = false;
+    greetedRef.current = false;
+    setSessionId(null);
+    setConversation([]);
+    setSttError(null);
+    setStatus("Initializing...");
+    setInitState("INIT");
+    initSession();
+  };
+
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) audioChunksRef.current.push(e.data);
       };
