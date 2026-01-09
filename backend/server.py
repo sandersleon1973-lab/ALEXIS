@@ -689,7 +689,7 @@ async def speech_to_text(audio: UploadFile = File(...)):
             logger.error(f"STT: FFmpeg stdout: {result.stdout}")
             raise HTTPException(status_code=500, detail=f"Audio conversion failed: {result.stderr[:200]}")
         
-        logger.info(f"STT: FFmpeg conversion successful")
+        logger.info("STT: FFmpeg conversion successful")
         
         # Read converted WAV
         if not os.path.exists(wav_path):
