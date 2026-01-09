@@ -8,7 +8,7 @@ import "react-pdf/dist/esm/Page/TextLayer.css";
 
 // Worker path (Emergent / CRA-safe)
 // Served from /public to avoid module resolution issues.
-pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.js`;
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
