@@ -78,6 +78,7 @@ const VoiceDiagnosticsPage = () => {
       const loginData = await loginRes.json();
 
       const sessionRes = await fetch(`${API_URL}/api/session/start`, {
+        signal,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ technician_id: loginData.technician_id })
