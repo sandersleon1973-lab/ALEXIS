@@ -31,35 +31,44 @@
     content: "";
     position: absolute;
     left: 50%;
-    top: 50%;
-    width: 128px;
+    width: 132px;
     height: 1px;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     pointer-events: none;
     opacity: 0;
-    filter: blur(0.3px);
+    z-index: 5;
+    mix-blend-mode: screen;
+    filter: blur(0.55px);
 }
 
+/* Blue line */
 .alexis-logo-wrap::before {
-    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.95), rgba(0,0,0,0));
-    box-shadow: 0 0 10px rgba(56,189,248,0.42);
-    animation: alexis-line-pulse-blue 1.55s ease-in-out infinite;
+    top: calc(50% - 1px);
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.98), rgba(0,0,0,0));
+    box-shadow:
+        0 0 10px rgba(56,189,248,0.55),
+        0 0 18px rgba(56,189,248,0.25);
+    animation: alexis-line-pulse-blue 1.25s ease-in-out infinite;
 }
 
+/* Red line */
 .alexis-logo-wrap::after {
-    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(248,113,113,0.9), rgba(0,0,0,0));
-    box-shadow: 0 0 10px rgba(248,113,113,0.32);
-    animation: alexis-line-pulse-red 1.55s ease-in-out infinite;
+    top: calc(50% + 1px);
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(248,113,113,0.96), rgba(0,0,0,0));
+    box-shadow:
+        0 0 10px rgba(248,113,113,0.45),
+        0 0 18px rgba(248,113,113,0.2);
+    animation: alexis-line-pulse-red 1.25s ease-in-out infinite;
 }
 
 @keyframes alexis-line-pulse-blue {
-    0%, 100% { opacity: 0.12; }
-    50% { opacity: 0.55; }
+    0%, 100% { opacity: 0.08; }
+    50% { opacity: 0.62; }
 }
 
 @keyframes alexis-line-pulse-red {
-    0%, 100% { opacity: 0.1; }
-    50% { opacity: 0.5; }
+    0%, 100% { opacity: 0.06; }
+    50% { opacity: 0.56; }
 }
 .alexis-text {
     font-weight: 600;
@@ -91,33 +100,42 @@
     content: "";
     position: absolute;
     left: 50%;
-    top: 50%;
-    width: 128px;
+    width: 132px;
     height: 1px;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     pointer-events: none;
     opacity: 0;
-    filter: blur(0.3px);
+    z-index: 5;
+    mix-blend-mode: screen;
+    filter: blur(0.55px);
 }
 
+/* Blue line */
 .alexis-logo-wrap::before {
-    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.95), rgba(0,0,0,0));
-    box-shadow: 0 0 10px rgba(56,189,248,0.42);
-    animation: alexis-line-pulse-blue 1.55s ease-in-out infinite;
+    top: calc(50% - 1px);
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.98), rgba(0,0,0,0));
+    box-shadow:
+        0 0 10px rgba(56,189,248,0.55),
+        0 0 18px rgba(56,189,248,0.25);
+    animation: alexis-line-pulse-blue 1.25s ease-in-out infinite;
 }
 
+/* Red line */
 .alexis-logo-wrap::after {
-    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(248,113,113,0.9), rgba(0,0,0,0));
-    box-shadow: 0 0 10px rgba(248,113,113,0.32);
-    animation: alexis-line-pulse-red 1.55s ease-in-out infinite;
+    top: calc(50% + 1px);
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(248,113,113,0.96), rgba(0,0,0,0));
+    box-shadow:
+        0 0 10px rgba(248,113,113,0.45),
+        0 0 18px rgba(248,113,113,0.2);
+    animation: alexis-line-pulse-red 1.25s ease-in-out infinite;
 }
 
 @keyframes alexis-line-pulse-blue {
-    0%, 100% { opacity: 0.12; }
-    50% { opacity: 0.55; }
+    0%, 100% { opacity: 0.08; }
+    50% { opacity: 0.62; }
 }
 
 @keyframes alexis-line-pulse-red {
-    0%, 100% { opacity: 0.1; }
-    50% { opacity: 0.5; }
+    0%, 100% { opacity: 0.06; }
+    50% { opacity: 0.56; }
 }
