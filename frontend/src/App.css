@@ -41,6 +41,13 @@
     filter: blur(0.55px);
 }
 
+
+/* Ensure neon lines render ABOVE the logo image without moving layout */
+.alexis-logo-wrap > img {
+    position: relative;
+    z-index: 1;
+}
+
 /* Blue line */
 .alexis-logo-wrap::before {
     top: calc(50% - 1px);
