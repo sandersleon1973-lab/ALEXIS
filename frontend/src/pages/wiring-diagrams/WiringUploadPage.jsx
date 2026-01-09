@@ -255,7 +255,8 @@ const WiringUploadPage = () => {
       setTechnicianTranscript("");
       setStatus("ALEXIS is speaking...");
 
-      await speakResponse(chatData.response);
+      // Speak asynchronously so UI updates (chat bubble render) are not blocked
+      speakResponse(chatData.response);
     } catch (err) {
       console.error("Chat error:", err);
       setConversation(prev => [...prev, { role: "alexis", text: "Error: Could not get response. Please try again." }]);
