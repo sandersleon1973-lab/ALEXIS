@@ -415,7 +415,9 @@ const VisualDiagnosticsPage = () => {
               />
             ) : (
               <div className="text-center text-slate-500">
-                <div className="text-5xl mb-3 opacity-30">📷</div>
+                <div className="mx-auto mb-3 h-16 w-16 rounded-2xl border border-slate-800 bg-slate-900/40 flex items-center justify-center">
+                  <ImageIcon className="h-8 w-8 opacity-60" />
+                </div>
                 <p className="text-sm">Start camera or upload an image</p>
                 <p className="text-xs text-slate-600 mt-1">ALEXIS will help identify components and check installation</p>
               </div>
