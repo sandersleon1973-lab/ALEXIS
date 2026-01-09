@@ -373,7 +373,7 @@ const WiringUploadPage = () => {
 
       {/* STT Error Banner */}
       {sttError && (
-        <div className="flex-shrink-0 px-6 py-2 bg-red-900/30 border-b border-red-800/50 flex items-center gap-2">
+        <div className="flex-shrink-0 px-6 py-2 bg-red-900/30 border-b border-red-800/50 flex items-center gap-2" data-testid="wiring-upload-error-banner">
           <AlertCircle className="h-4 w-4 text-red-400" />
           <span className="text-sm text-red-300">{sttError}</span>
           <button onClick={() => setSttError(null)} className="ml-auto text-red-400 hover:text-red-300 text-xs">Dismiss</button>
