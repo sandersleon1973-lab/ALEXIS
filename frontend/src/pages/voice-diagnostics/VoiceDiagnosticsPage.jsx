@@ -241,7 +241,14 @@ const VoiceDiagnosticsPage = () => {
       // Speak asynchronously so UI updates (chat bubble render) are not blocked
       speakResponse(chatData.response);
     } catch (err) {
-      setConversation(prev => [...prev, { role: "alexis", text: "Error: Could not analyze symptoms. Please try again." }]);
+      setConversation((prev) => [
+        ...prev,
+        {
+          role: "alexis",
+          text: "Request failed. Please retry."
+        }
+      ]);
+      setSttError(err?.message || "Request failed");
       setStatus("LIVE - Symptom Diagnostics");
     } finally {
       setIsProcessing(false);
