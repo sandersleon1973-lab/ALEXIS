@@ -66,7 +66,7 @@ const VoiceDiagnosticsPage = () => {
     }
   };
 
-  const initSession = async () => {
+  const initSession = async (signal) => {
     try {
       setStatus("Connecting...");
       const loginRes = await fetch(`${API_URL}/api/auth/login`, {
