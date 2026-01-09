@@ -417,7 +417,7 @@ const WiringUploadPage = () => {
                   <ZoomOut className="h-4 w-4" />
                 </Button>
                 <span className="text-xs text-slate-400 w-12 text-center">{Math.round(scale * 100)}%</span>
-                <Button variant="ghost" size="sm" onClick={handleZoomIn} className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-700">
+                <Button variant="ghost" size="sm" onClick={handleZoomIn} data-testid="wiring-upload-zoom-in" className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-700">
                   <ZoomIn className="h-4 w-4" />
                 </Button>
               </div>
