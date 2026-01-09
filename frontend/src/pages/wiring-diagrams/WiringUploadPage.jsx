@@ -428,7 +428,7 @@ const WiringUploadPage = () => {
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <span className="text-xs text-slate-400 w-16 text-center">{currentPage} / {numPages}</span>
-                  <Button variant="ghost" size="sm" onClick={handleNextPage} disabled={currentPage >= numPages} className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-30">
+                  <Button variant="ghost" size="sm" onClick={handleNextPage} disabled={currentPage >= numPages} data-testid="wiring-upload-next-page" className="h-8 w-8 p-0 text-slate-300 hover:text-white hover:bg-slate-700 disabled:opacity-30">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
