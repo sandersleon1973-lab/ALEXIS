@@ -227,7 +227,10 @@ const VoiceDiagnosticsPage = () => {
         })
       });
 
-      if (!chatRes.ok) throw new Error("Chat failed");
+      if (!chatRes.ok) {
+        const detail = await chatRes.text().catch(() => "");
+        throw new Error(`Chat failed (${chatRes.status}) ${detail}`);
+      }
       const chatData = await chatRes.json();
 
       const alexisMessage = { role: "alexis", text: chatData.response };
