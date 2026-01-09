@@ -370,6 +370,7 @@ const VisualDiagnosticsPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => document.getElementById("visual-file-input").click()}
+                data-testid="visual-diagnostics-upload-button"
                 className="h-8 px-3 bg-slate-800 border-slate-600 text-xs uppercase tracking-wider"
               >
                 Upload Image
