@@ -348,7 +348,7 @@ const VisualDiagnosticsPage = () => {
 
       {/* STT Error Banner */}
       {sttError && (
-        <div className="flex-shrink-0 mb-4 px-4 py-2 bg-red-900/30 border border-red-800/50 rounded-lg flex items-center gap-2">
+        <div className="flex-shrink-0 mb-4 px-4 py-2 bg-red-900/30 border border-red-800/50 rounded-lg flex items-center gap-2" data-testid="visual-diagnostics-error-banner">
           <AlertCircle className="h-4 w-4 text-red-400" />
           <span className="text-sm text-red-300">{sttError}</span>
           <button onClick={() => setSttError(null)} className="ml-auto text-red-400 text-xs">Dismiss</button>
