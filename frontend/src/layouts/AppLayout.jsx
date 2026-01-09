@@ -34,7 +34,7 @@ const AppLayout = () => {
     <div className="h-screen bg-[radial-gradient(circle_at_bottom,_#0b101e,_#02040a_60%,_#000000)] flex items-center justify-center py-4" data-testid="app-shell">
       <div className="w-[95vw] max-w-[1400px] h-[88vh] rounded-[24px] border border-slate-500/30 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.25),_rgba(15,23,42,0.9)_45%,_rgba(3,7,18,0.98))] shadow-[0_0_40px_rgba(15,23,42,0.9)] overflow-hidden flex text-slate-100">
         {/* Sidebar */}
-        <aside className="w-[260px] bg-gradient-to-b from-slate-950/95 via-slate-950/90 to-black/95 border-r border-slate-500/40 relative flex flex-col">
+        <aside className="w-[260px] bg-gradient-to-b from-slate-950/95 via-slate-950/90 to-black/95 border-r border-slate-500/40 relative flex flex-col" data-testid="sidebar">
           {/* Brand */}
           <div className="px-2 pt-4 pb-5 border-b border-slate-500/30 flex items-center justify-start">
             <img
