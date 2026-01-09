@@ -119,6 +119,7 @@ const VoiceDiagnosticsPage = () => {
 
   // Voice handlers
   const startRecording = async () => {
+    if (isProcessing || isSpeaking) return;
     if (!sessionId) {
       setSttError("Session not ready. Please wait.");
       return;
