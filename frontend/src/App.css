@@ -69,13 +69,13 @@
 }
 
 @keyframes alexis-line-pulse-blue {
-    0%, 100% { opacity: 0.08; }
-    50% { opacity: 0.62; }
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.72; }
 }
 
 @keyframes alexis-line-pulse-red {
-    0%, 100% { opacity: 0.06; }
-    50% { opacity: 0.56; }
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.66; }
 }
 .alexis-text {
     font-weight: 600;
@@ -138,11 +138,11 @@
 }
 
 @keyframes alexis-line-pulse-blue {
-    0%, 100% { opacity: 0.08; }
-    50% { opacity: 0.62; }
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.72; }
 }
 
 @keyframes alexis-line-pulse-red {
-    0%, 100% { opacity: 0.06; }
-    50% { opacity: 0.56; }
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.66; }
 }
