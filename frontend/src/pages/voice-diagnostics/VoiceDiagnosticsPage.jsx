@@ -77,6 +77,7 @@ const VoiceDiagnosticsPage = () => {
       if (voiceCachedSessionId) {
         setSessionId(voiceCachedSessionId);
         setStatus("LIVE - Symptom Diagnostics");
+        setInitState("LIVE");
         if (!voiceGreetingSent && !greetedRef.current) {
           voiceGreetingSent = true;
           greetedRef.current = true;
