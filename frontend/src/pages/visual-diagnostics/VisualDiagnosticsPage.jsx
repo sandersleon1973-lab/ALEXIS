@@ -387,6 +387,7 @@ const VisualDiagnosticsPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={isCameraActive ? stopCamera : startCamera}
+                data-testid="visual-diagnostics-camera-toggle-button"
                 className={`h-8 px-3 ${isCameraActive ? 'bg-red-900/50 border-red-500/50' : 'bg-slate-800 border-slate-600'} text-xs uppercase tracking-wider`}
               >
                 {isCameraActive ? <><CameraOff className="h-3 w-3 mr-1" /> Stop</> : <><Camera className="h-3 w-3 mr-1" /> Camera</>}
