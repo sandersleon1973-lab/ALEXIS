@@ -400,6 +400,7 @@ const WiringUploadPage = () => {
               <input
                 id="pdf-input"
                 type="file"
+                data-testid="wiring-upload-file-input"
                 accept=".pdf"
                 className="hidden"
                 onChange={handleFileChange}
