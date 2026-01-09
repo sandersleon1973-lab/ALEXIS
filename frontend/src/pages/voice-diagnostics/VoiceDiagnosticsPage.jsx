@@ -313,6 +313,7 @@ const VoiceDiagnosticsPage = () => {
           audio.onended = () => { 
             setIsSpeaking(false); 
             setStatus("LIVE - Symptom Diagnostics");
+            setInitState("LIVE");
             URL.revokeObjectURL(audioUrl); 
           };
           audio.onerror = () => browserSpeak(cleanText);
