@@ -88,12 +88,17 @@ const VoiceDiagnosticsPage = () => {
       if (sessionData.live) {
         setSessionId(sessionData.session_id);
         setStatus("LIVE - Symptom Diagnostics");
-        
-        // Initial ALEXIS greeting for symptom-based diagnostics
-        setConversation([{
-          role: "alexis",
-          text: "I'm ready to help diagnose your vehicle issue. Please describe the symptom you're experiencing:\n\n• What is the vehicle doing (or not doing)?\n• When does it happen? (cold start, warm, under load, at speed)\n• How often? (always, intermittent, specific conditions)\n• Any warning lights, sounds, or smells?\n\nThe more details you provide, the better I can help narrow down the cause."
-        }]);
+
+        // Initial ALEXIS greeting (single-shot)
+        if (!greetedRef.current) {
+          greetedRef.current = true;
+          setConversation([
+            {
+              role: "alexis",
+              text: "I’m ready to help diagnose your vehicle issue. Describe the symptom you’re experiencing:\n\n• What is the vehicle doing (or not doing)?\n• When does it happen? (cold start, warm, under load, at speed)\n• How often? (always, intermittent, specific conditions)\n• Any warning lights, sounds, or smells?\n\nThe more detail you provide, the faster we can narrow the fault tree."
+            }
+          ]);
+        }
       } else {
         setStatus("Offline");
       }
