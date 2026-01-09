@@ -386,6 +386,7 @@ const VoiceDiagnosticsPage = () => {
                 <Button
                   onClick={handleSend}
                   disabled={isProcessing || !technicianTranscript.trim() || !sessionId}
+                  data-testid="voice-diagnostics-send-button"
                   className="h-8 px-6 bg-orange-600 hover:bg-orange-500 text-white font-semibold uppercase tracking-wider text-xs disabled:opacity-40"
                 >
                   {isProcessing ? '...' : 'Analyze'}
