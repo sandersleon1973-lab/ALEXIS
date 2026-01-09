@@ -284,9 +284,14 @@ const VoiceDiagnosticsPage = () => {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <span className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${
-              sessionId ? 'bg-green-500/20 text-green-400 border border-green-500/40' : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
-            }`}>
+            <span
+              className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wider ${
+                sessionId
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/40'
+                  : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/40'
+              }`}
+              data-testid="voice-diagnostics-status"
+            >
               {status}
             </span>
             {isSpeaking && <Volume2 className="h-4 w-4 text-cyan-400 animate-pulse" />}
