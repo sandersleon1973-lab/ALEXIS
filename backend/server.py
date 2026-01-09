@@ -11,8 +11,8 @@ from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import io
-import azure.cognitiveservices.speech as speechsdk
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from emergentintegrations.llm.openai import OpenAISpeechToText
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
