@@ -289,6 +289,7 @@ const VoiceDiagnosticsPage = () => {
       ]);
       setSttError(err?.message || "Request failed");
       setStatus("LIVE - Symptom Diagnostics");
+      setInitState("LIVE");
     } finally {
       setIsProcessing(false);
     }
