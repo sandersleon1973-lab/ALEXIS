@@ -41,10 +41,18 @@ const VoiceDiagnosticsPage = () => {
     conversationEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation]);
 
-  // Initialize session and arm microphone
+  // Initialize session and arm microphone (single-init)
   useEffect(() => {
-    initSession();
+    if (initOnceRef.current) return;
+    initOnceRef.current = true;
+
+    const abort = new AbortController();
+    initAbortRef.current = abort;
+
+    initSession(abort.signal);
     armMicrophone();
+
+    return () => abort.abort();
   }, []);
 
   const armMicrophone = async () => {
