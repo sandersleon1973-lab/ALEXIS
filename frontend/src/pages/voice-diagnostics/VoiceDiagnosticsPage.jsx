@@ -146,8 +146,16 @@ const VoiceDiagnosticsPage = () => {
       setIsRecording(true);
       setStatus("Listening... describe the symptom");
     } catch (err) {
-      setSttError("Could not access microphone.");
+      const name = err?.name;
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setSttError("Microphone permission blocked. Allow mic access in Chrome site settings.");
+      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        setSttError("No microphone device found. Connect a mic/headset and retry.");
+      } else {
+        setSttError("Could not access microphone.");
+      }
       setMicReady(false);
+      setStatus("LIVE - Symptom Diagnostics");
     }
   };
 
