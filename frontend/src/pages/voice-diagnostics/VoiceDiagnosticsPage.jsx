@@ -95,6 +95,7 @@ const VoiceDiagnosticsPage = () => {
       if (!voiceSessionInitPromise) {
         voiceSessionInitPromise = (async () => {
           setStatus("Connecting...");
+          setInitState("INIT");
 
           const loginRes = await fetch(`${API_URL}/api/auth/login`, {
             method: "POST",
