@@ -1,34 +1,34 @@
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+/* Global app chrome for diagnostics dashboard */
+
+.App {
+    height: 100%;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Chrome-style branding helpers */
+.sa-logo-img {
+    /* Subtle downward shadow for lift, no glow */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+.alexis-badge {
+    /* Inner bevel for metal edge, no outer glow */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(15, 23, 42, 0.9);
 }
 
-.App-link {
-    color: #61dafb;
+.alexis-text {
+    font-weight: 600;
+    /* Multi-directional text shadow to fake bevel; very tight so it is not a glow */
+    text-shadow:
+        0 -1px 1px rgba(255, 255, 255, 0.4),
+        0 1px 1px rgba(15, 23, 42, 0.9),
+        1px 0 1px rgba(148, 163, 184, 0.7),
+        -1px 0 1px rgba(15, 23, 42, 0.9);
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+.technician-dashboard-hero {
+    /* Slightly desaturate and dim to blend with system purple-blue lighting */
+    filter: saturate(0.85) brightness(0.94)
+        drop-shadow(0 0 20px rgba(79, 70, 229, 0.45));
 }

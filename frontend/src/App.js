@@ -1,53 +1,77 @@
-import { useEffect } from "react";
+import React from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import AppLayout from "@/layouts/AppLayout";
+import DashboardPage from "@/pages/dashboard/DashboardPage";
+import VisualDiagnosticsPage from "@/pages/visual-diagnostics/VisualDiagnosticsPage";
+import VoiceDiagnosticsPage from "@/pages/voice-diagnostics/VoiceDiagnosticsPage";
+import AboutAlexisPage from "@/pages/about/AboutAlexisPage";
+import WiringDiagramsPage from "@/pages/wiring-diagrams/WiringDiagramsPage";
+import WiringUploadPage from "@/pages/wiring-diagrams/WiringUploadPage";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import PlaceholderPage from "@/pages/placeholders/PlaceholderPage";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+// NOTE: Backend integration exists in the template, but this dashboard UI is
+// CURRENTLY USING MOCKED DATA ONLY (see src/mock/dashboardMock.js).
+// We will wire real APIs later.
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index path="/" element={<DashboardPage />} />
+          <Route
+            path="/devices"
+            element={
+              <PlaceholderPage
+                title="Devices"
+                description="Devices management view will list connected ECUs, interfaces, and profiles."
+              />
+            }
+          />
+          <Route
+            path="/diagnostic-console"
+            element={
+              <PlaceholderPage
+                title="Diagnostic Console"
+                description="Live diagnostic console for viewing data streams and command history."
+              />
+            }
+          />
+          <Route
+            path="/plugins"
+            element={
+              <PlaceholderPage
+                title="Plugins"
+                description="Manage installed plugins and extensions for additional diagnostic capabilities."
+              />
+            }
+          />
+          <Route
+            path="/fault-injection"
+            element={<PlaceholderPage title="Fault Injection" />}
+          />
+          <Route path="/simulator" element={<PlaceholderPage title="Simulator" />} />
+          <Route
+            path="/test-scenarios"
+            element={<PlaceholderPage title="Test Scenarios" />}
+          />
+          <Route
+            path="/visual-diagnostics"
+            element={<VisualDiagnosticsPage />}
+          />
+          <Route
+            path="/voice-diagnostics"
+            element={<VoiceDiagnosticsPage />}
+          />
+          <Route path="/wiring-diagrams" element={<WiringDiagramsPage />} />
+          <Route path="/wiring-diagrams/upload" element={<WiringUploadPage />} />
+          <Route path="/about-alexis" element={<AboutAlexisPage />} />
+          <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
