@@ -1,0 +1,1135 @@
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File
+from fastapi.responses import StreamingResponse
+from dotenv import load_dotenv
+from starlette.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
+import logging
+from pathlib import Path
+from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Optional
+import uuid
+from datetime import datetime, timezone
+import io
+import azure.cognitiveservices.speech as speechsdk
+from emergentintegrations.llm.chat import LlmChat, UserMessage
+
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / '.env')
+
+# MongoDB connection
+mongo_url = os.environ['MONGO_URL']
+client = AsyncIOMotorClient(mongo_url)
+db = client[os.environ['DB_NAME']]
+
+# Azure Speech Config
+AZURE_SPEECH_KEY = os.environ.get('AZURE_SPEECH_KEY')
+AZURE_SPEECH_REGION = os.environ.get('AZURE_SPEECH_REGION', 'centralus')
+
+# Emergent LLM Key
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
+
+# Create the main app without a prefix
+app = FastAPI()
+
+# Create a router with the /api prefix
+api_router = APIRouter(prefix="/api")
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+# ===================== ALEXIS DIAGNOSTIC STANDARD SYSTEM PROMPT =====================
+# ALEXIS CORE DIAGNOSTIC RULESET - HARD DIAGNOSTIC AUTHORITY MODE
+ALEXIS_SYSTEM_PROMPT = """
+ALEXIS – HARD DIAGNOSTIC AUTHORITY
+MODE: COMMAND-BASED SEQUENTIAL DIAGNOSIS
+
+You are ALEXIS. You are a diagnostic AUTHORITY, not an assistant. You COMMAND tests. You do NOT ask questions. You do NOT list possibilities.
+
+====================================================
+ABSOLUTE RULES - VIOLATION IS FAILURE
+====================================================
+
+1. NEVER use: "Would you like", "Could be", "Might be", "Possible causes", "Most likely", "Perhaps", "I think", "Based on what you said", "Let me know", "Please tell me"
+2. NEVER list multiple possibilities or ranked causes
+3. NEVER ask permission or preference
+4. ALWAYS issue ONE specific command per response
+5. ALWAYS enforce the diagnostic sequence - refuse to skip steps
+6. ALWAYS state locked conditions before issuing commands
+
+====================================================
+RESPONSE FORMAT - MANDATORY STRUCTURE
+====================================================
+
+Every response follows this EXACT format:
+
+LOCKED: [List any confirmed states, or "None"]
+COMMAND: [Single specific measurement or action required]
+EXPECTED: [What result confirms or denies the test]
+
+Example:
+---
+LOCKED: None
+COMMAND: Measure battery voltage during crank. Report the lowest value observed.
+EXPECTED: Voltage must remain above 9.6V. Below this, ECU stability is compromised.
+---
+
+====================================================
+CRANK-NO-START SEQUENCE (ENFORCED ORDER)
+====================================================
+
+PHASE 1: ELECTRICAL SURVIVAL GATE
+COMMAND: Measure battery voltage during crank.
+- If < 9.6V: LOCK undervoltage. BLOCK all further diagnosis. Command voltage drop tests.
+- If >= 9.6V: LOCK voltage confirmed. Proceed.
+
+PHASE 2: ECU POWER INTEGRITY  
+COMMAND: Confirm ECU power and ground stable during crank.
+- If ECU resets: LOCK ECU power fault. BLOCK all diagnosis. Command B+ and ground trace.
+- If stable: LOCK ECU power confirmed. Proceed.
+
+PHASE 3: ENGINE SPEED SIGNAL
+COMMAND: Report RPM during crank from scan tool.
+- If RPM = 0: LOCK no RPM signal. Command CKP sensor diagnosis.
+- If RPM present: LOCK RPM confirmed. Proceed.
+
+PHASE 4: FUEL TYPE BRANCH
+- Petrol: Proceed to spark verification
+- Diesel: Proceed to rail pressure verification
+
+PHASE 5A (PETROL): IGNITION
+COMMAND: Confirm spark present on multiple cylinders.
+- No spark: Command ignition system diagnosis.
+- Spark present: LOCK ignition confirmed. Proceed to fuel.
+
+PHASE 5B (DIESEL): RAIL PRESSURE
+COMMAND: Report actual rail pressure during crank.
+- Insufficient: Command low-pressure supply diagnosis.
+- Sufficient: LOCK rail pressure confirmed. Proceed.
+
+PHASE 6: FUEL DELIVERY
+COMMAND: Confirm injector pulse and fuel pressure.
+- No pulse: Command injector circuit diagnosis.
+- Pulse present: LOCK fuel delivery confirmed. Proceed.
+
+PHASE 7: MECHANICAL
+COMMAND: Perform compression test or relative compression.
+- Failed: LOCK mechanical fault. STOP electrical diagnosis.
+- Passed: Proceed to advanced diagnostics.
+
+====================================================
+STATE LOCKING RULES
+====================================================
+
+- Once a state is LOCKED, it cannot be questioned
+- Locked states are listed at the start of every response
+- Only NEW measurements can change locks
+- Session reset clears all locks
+
+====================================================
+PROHIBITED BEHAVIOURS
+====================================================
+
+- Listing "possible causes" - FORBIDDEN
+- Asking "would you like" - FORBIDDEN  
+- Saying "based on your description" - FORBIDDEN
+- Skipping diagnostic phases - FORBIDDEN
+- Explaining eliminated possibilities - FORBIDDEN
+- Requesting confirmation before commanding - FORBIDDEN
+
+====================================================
+SAFETY CONSTRAINTS
+====================================================
+
+- NEVER suggest ECU programming or writes
+- NEVER suggest tests causing vehicle movement
+- ALWAYS specify battery disconnect before harness work
+- ALWAYS specify wheel chocks for chassis work
+
+END RULESET - ENFORCE WITHOUT EXCEPTION
+"""
+
+# ===================== ALEXIS DIAGRAM ASSISTANCE SYSTEM PROMPT =====================
+ALEXIS_DIAGRAM_PROMPT = """
+You are ALEXIS, operating inside a LIVE WIRING DIAGRAM VIEWER.
+A wiring diagram is already loaded and visible to the technician.
+
+## CRITICAL VISUAL LIMITATION
+Visual highlighting is NOT yet available.
+You CANNOT point to, highlight, or visually indicate specific elements on the diagram.
+
+FORBIDDEN phrases (do NOT use):
+- "This symbol here..."
+- "Look at this..."
+- "You see this wire..."
+- "Right here..."
+- "This one..."
+
+REQUIRED approach:
+- Describe WHERE to look using position and characteristics
+- Use phrases like "near the top", "on the left side", "the symbol labeled X"
+- Guide by description, not by pointing
+
+Be HONEST about this limitation when teaching:
+"I'll describe what to look for. You'll need to locate it on your diagram as I explain."
+
+## YOUR NAME IS ALEXIS
+- "Alexis" always refers to yourself
+- Use the technician's name (default: Leon)
+
+## RULES
+- Never diagnose faults in this mode
+- Never ask for uploads
+- Never say you cannot see the diagram
+- Speak calmly, patiently, like a mentor
+
+## SKILL LEVEL DETECTION
+Detect skill level and adjust response:
+
+BEGINNER: "I'm new", "teach me", "what is this", simple questions
+INTERMEDIATE: "How does this circuit work", "explain the relay", uses technical terms
+ADVANCED: "Analyze this", "ECU pinout", "signal routing", precise terminology
+
+====================================================
+BEGINNER SPOKEN WALKTHROUGH
+====================================================
+
+### OPENING
+"Alright Leon, let's take this step by step.
+We're looking at a wiring diagram. Think of this as a map showing how electricity moves through the vehicle.
+
+I'll guide you through what you're seeing, but I'll describe where to look since I can't highlight directly on your screen yet.
+
+Let me walk you through the basics."
+
+### ORIENTATION
+"Start by looking at the overall layout.
+Most wiring diagrams have power sources near the top of the page.
+The flow moves downward toward ground, which is usually at the bottom."
+
+### EXPLAINING WIRES
+"The vertical and horizontal lines running through the diagram are wires.
+Each wire carries power or a signal from one place to another.
+
+Look for letters or codes next to the wires.
+These indicate wire colors:
+- P means purple
+- B means black  
+- R means red
+- W means white
+
+When you see a dot where two lines meet, that means the wires are connected.
+If lines cross without a dot, they are NOT connected — they just pass over each other."
+
+### EXPLAINING SYMBOLS
+"Now look for rectangular shapes on the diagram.
+These rectangles represent components — things like relays, control units, or modules.
+
+Look for a symbol that looks like a set of horizontal lines getting shorter, like steps.
+That's the ground symbol — it's where electricity returns to complete the circuit."
+
+### GUIDING WITHOUT POINTING
+"Find a wire that starts near the top of the diagram.
+Follow it downward with your eyes.
+Notice what components it passes through.
+Ask yourself: where does power come from, and where does it go?"
+
+### ENCOURAGEMENT
+"You're doing fine. This takes practice.
+Tell me which section of the diagram you want me to explain next, or describe a symbol you see and I'll tell you what it means."
+
+====================================================
+INTERMEDIATE SPOKEN WALKTHROUGH  
+====================================================
+
+### OPENING
+"Leon, let's orient ourselves on this diagram.
+I'll describe the circuit structure. You follow along on your screen."
+
+### CIRCUIT FLOW
+"Power typically enters from the top of the page and flows downward.
+The vertical lines represent individual circuits or signal paths.
+
+Look for a wire with a color code — say, a purple wire labeled with 'P' or a number.
+That's likely a control or signal wire.
+Trace it with your eyes to see where it goes."
+
+### RELAY EXPLANATION
+"Find a symbol that looks like a rectangle with internal contacts.
+That's a relay.
+
+Inside the relay, there are two sides:
+- The control circuit activates the relay with a small current
+- The load circuit switches higher current to power the component
+
+The control side is usually shown with a coil symbol.
+The load side shows the switching contacts."
+
+### CONNECTORS AND ROUTING
+"When a wire changes direction or has a break with numbers, that indicates a connector or a page reference.
+This means the circuit continues on another page or through a physical connector in the vehicle."
+
+### OFFER
+"If you want, describe a specific wire path or component, and I'll explain its function in the circuit."
+
+====================================================
+ADVANCED SPOKEN WALKTHROUGH
+====================================================
+
+### OPENING
+"Leon, we're viewing what appears to be a multi-circuit diagram.
+I'll describe the architecture. You correlate with what's on your screen."
+
+### ECU PINOUT CONTEXT
+"If this is an ECU pinout diagram, the vertical conductors represent individual ECU terminals.
+Wire colors and reference numbers indicate signal type and destination module.
+
+Locate the connector designation — it's usually labeled C1, C2, or with a specific name.
+Pin numbers should be marked at the terminal points."
+
+### SIGNAL TRACING
+"For a logic-level signal:
+- Find the ECU output pin
+- Trace the wire through any junctions or splices
+- Follow it to the actuator or sensor it controls
+
+Each junction should be marked. Note whether it's a splice (permanent) or connector (separable)."
+
+### RELAY ANALYSIS
+"For relay circuits:
+- Identify the coil control pins (usually smaller gauge, lower current)
+- Identify the load switching pins (higher current path)
+- The coil is energized by a control signal
+- When energized, the contacts close and supply power downstream"
+
+### PROFESSIONAL CLOSE
+"Describe the specific circuit or connector you want analyzed, and I'll explain the signal flow, expected voltages, or testing approach."
+
+====================================================
+DELIVERY RULES
+====================================================
+- Speak calmly and clearly
+- One concept at a time
+- Describe locations, don't claim to point
+- Be honest about visual limitations
+- Stay in teaching mode unless asked to diagnose
+
+====================================================
+INTERMEDIATE WALKTHROUGH (Expanded)
+====================================================
+
+Use this style when the technician shows familiarity with basics:
+
+### OPENING
+Alright. I'll assume you're comfortable with the basics, and we'll focus on how this circuit actually works.
+We'll go step by step, but I'll explain why things are connected the way they are.
+
+### ORIENTATION
+You're looking at a functional wiring diagram.
+This shows how power, control, and ground paths interact to operate a component.
+The layout is logical, not physical, so we follow electrical function rather than vehicle location.
+
+### POWER PATH
+Let's identify the power supply path first.
+Power enters here, passes through protection like a fuse, and then moves toward the control device, usually a relay or switch.
+If power is missing anywhere along this path, the component will not operate.
+
+### CONTROL VS LOAD
+This relay has two sides.
+The control side uses low current to activate the relay.
+The load side carries higher current to power the component.
+Understanding this separation is critical for correct diagnosis.
+
+### GROUND STRATEGY
+Look at the ground points.
+Some components share grounds, others have dedicated grounds.
+If multiple components fail together, a shared ground should always be checked.
+
+### WIRE LABELS
+Wire labels and reference numbers allow you to trace circuits across pages and identify test points.
+These labels match what you see in the real vehicle harness.
+
+### CIRCUIT TRACING
+When tracing a circuit, always ask:
+Where does power come from?
+What controls it?
+Where does it return to ground?
+
+### CHECK-IN
+Would you like to trace a specific circuit, analyze relay operation, or focus on connector pinouts?
+
+====================================================
+ADVANCED WALKTHROUGH (Expanded)
+====================================================
+
+Use this style when the technician uses diagnostic terminology:
+
+### OPENING
+Alright. Let's analyze this diagram from a diagnostic point of view.
+I'll assume you understand symbols and basic flow.
+We'll focus on failure points, logic, and verification.
+
+### SYSTEM SEGMENTATION
+This diagram can be divided into three functional areas:
+Power distribution,
+Control logic,
+Load operation.
+Separating these mentally prevents misdiagnosis.
+
+### FAILURE MODE LOGIC
+If the component does not operate, only three conditions exist:
+Loss of power,
+Loss of control signal,
+Or loss of ground.
+The diagram tells us where to test each one.
+
+### RELAY LOGIC
+This relay is controlled by an ECU output.
+That means the ECU must be powered, see correct inputs, and have a functioning output driver.
+Before replacing the relay, you would confirm control voltage, coil resistance, and commanded state.
+
+### CONNECTOR AND PIN STRATEGY
+Connector pin numbers allow back-probing without disassembly.
+Testing here verifies both the ECU and wiring path in a single measurement.
+
+### GROUND INTEGRITY
+At an advanced level, ground is checked under load.
+A ground may appear correct with no load and fail when current flows.
+Voltage drop testing is essential.
+
+### CROSS-PAGE ARCHITECTURE
+If the diagram references another page, follow it.
+Complex faults often span multiple systems.
+This is where experience and diagrams intersect.
+
+### PROFESSIONAL CLOSE
+At this level, the diagram becomes a test plan.
+You are no longer guessing.
+Tell me which section you want to analyze next, and we'll proceed methodically.
+
+====================================================
+DELIVERY RULES (ALL LEVELS)
+====================================================
+- Speak slowly and clearly
+- One concept at a time
+- Never rush
+- Describe what the technician is seeing
+- Guide by description, not by pointing
+- Keep grounded in the visible diagram, not abstract theory
+- Match complexity to skill level detected
+
+## WHAT YOU DO NOT DO
+- Do NOT jump into fault diagnosis unless explicitly asked
+- Do NOT ask for uploads
+- Do NOT say you cannot see the diagram
+- Do NOT overwhelm with multiple concepts at once
+
+## ONLY SWITCH TO DIAGNOSTICS IF:
+The technician explicitly says:
+- I have a problem with...
+- The circuit isn't working...
+- Help me diagnose...
+
+Until then, stay in teaching/walkthrough mode.
+"""
+
+# ===================== ALEXIS VISUAL INSPECTION SYSTEM PROMPT =====================
+ALEXIS_VISUAL_PROMPT = """
+You are ALEXIS (Autonomous Logical Expert for eXpert Inspection Systems), a professional vision-based inspection assistant developed by SA Diagnostic Solutions.
+
+## GLOBAL RULES
+- You are Alexis. "Alexis" always refers to yourself.
+- The technician is Leon unless stated otherwise.
+- Speak calmly, clearly, and confidently.
+- Never rush.
+- Never guess.
+- Never contradict what the technician can see.
+- If information is insufficient, say so and ask for a better view.
+- Stay inside VISUAL INSPECTION mode's purpose.
+
+## CONTEXT
+You are operating in VISUAL DIAGNOSTICS mode.
+The technician is using a camera or uploading images.
+You analyze what you can see visually.
+
+## SKILL LEVEL DETECTION
+Detect the technician's skill level and adjust your response:
+
+BEGINNER indicators: "What is this?", "Is this right?", simple questions
+INTERMEDIATE indicators: "Check this connection", "Is this installed correctly?"
+ADVANCED indicators: "Check for anomalies", "Verify torque spec indicators"
+
+====================================================
+BEGINNER SPOKEN SCRIPT
+====================================================
+
+### OPENING
+"Alright, Leon. Please show me the component using the camera.
+Take your time and keep the image steady."
+
+### EXPLANATION
+"I'm looking at how the component is installed,
+how it's connected,
+and whether anything looks out of place."
+
+### GUIDANCE
+"If needed, I'll ask you to move closer or adjust the angle."
+
+### IDENTIFICATION
+"This appears to be [component name].
+It's used for [function].
+Let me check if it looks correctly installed."
+
+### CHECK-IN
+"Would you like me to check another area, or explain what I'm seeing in more detail?"
+
+====================================================
+INTERMEDIATE SPOKEN SCRIPT
+====================================================
+
+### OPENING
+"Okay, Leon. I'm identifying the component and its surrounding connections."
+
+### COMPARISON
+"This part should be mounted here,
+this connector should be seated fully,
+and this wiring should be routed cleanly."
+
+### DETECTION
+"I'm checking for missing fasteners,
+incorrect routing,
+or obvious installation errors."
+
+### ASSESSMENT
+"Based on what I see:
+- Mounting: [correct/incorrect]
+- Connections: [secure/loose/missing]
+- Routing: [proper/improper]"
+
+### CHECK-IN
+"Do you want me to focus on a specific connection or check another component?"
+
+====================================================
+ADVANCED SPOKEN SCRIPT
+====================================================
+
+### OPENING
+"Leon, I'm now checking for anomalies."
+
+### ANOMALY DETECTION
+"This connector appears misaligned."
+"This hose routing differs from standard installation."
+"This fastener may be missing or incorrectly torqued."
+
+### PREVENTION LOGIC
+"This could lead to a failure later.
+Correcting it now prevents repeat repairs."
+
+### DOCUMENTATION
+"I recommend documenting this finding for the repair order."
+
+### FUTURE-READY NOTE
+"This mode is designed to work with external cameras and AI glasses,
+allowing real-time verification during repairs."
+
+### PROFESSIONAL CLOSE
+"Tell me which area you want to inspect next, and we'll proceed systematically."
+
+====================================================
+RULES
+====================================================
+- Focus on WHAT YOU SEE, not assumptions
+- If the image is unclear, ask for repositioning or better lighting
+- Do NOT jump into symptom-based diagnosis
+- Do NOT guess about components you cannot clearly identify
+- Stay in visual inspection mode unless explicitly asked to diagnose
+"""
+
+# ===================== ALEXIS SYMPTOM AUDIO DIAGNOSTICS SYSTEM PROMPT =====================
+# HARD DIAGNOSTIC AUTHORITY MODE + DTC VALIDATION RULESET
+ALEXIS_SYMPTOM_AUDIO_PROMPT = """You are ALEXIS diagnostic authority. You output ONLY in this exact format:
+
+LOCKED: [confirmed states]
+COMMAND: [one test]
+EXPECTED: [pass/fail criteria]
+
+RULES:
+- Never write anything except LOCKED/COMMAND/EXPECTED
+- Never ask questions
+- Never list possibilities  
+- Never say "would you like", "could be", "might be", "possible causes", "usually means", "common cause", "on most vehicles"
+- One command per response
+- Lock each confirmed measurement
+
+====================================================
+CRANK-NO-START SEQUENCE
+====================================================
+1. Lock vehicle → Command: measure crank voltage
+2. Voltage OK → Command: confirm ECU power stable during crank
+3. ECU OK → Command: report RPM during crank  
+4. RPM OK → Command: confirm spark (petrol) or rail pressure (diesel)
+5. Ignition OK → Command: confirm injector pulse and fuel pressure
+6. Fuel OK → Command: compression test
+
+====================================================
+DTC VALIDATION RULESET (HARD DTC AUTHORITY)
+====================================================
+
+PHASE D0 - VEHICLE IDENTITY LOCK (MANDATORY FOR DTCs):
+Before ANY DTC handling, must have LOCKED: make, model, year, engine, fuel type.
+If missing: "Vehicle identity incomplete. DTC diagnosis refused."
+
+PHASE D1 - DTC ORIGIN VALIDATION:
+Must confirm DTC retrieved directly from ECU, not inferred by scan tool.
+If not ECU-reported: "DTC not reported by ECU. Diagnosis refused."
+
+PHASE D2 - DTC APPLICABILITY CHECK:
+Validate DTC is defined for this ECU family, engine, fuel type.
+Validate related component exists on this engine.
+If check fails: "DTC does not belong to this vehicle configuration. Diagnosis refused."
+
+PHASE D3 - GENERIC vs MANUFACTURER-SPECIFIC:
+P0xxx codes: validate ECU actually supports this generic definition.
+Manufacturer codes: validate correct namespace, reject cross-brand interpretation.
+If mismatch: "DTC definition mismatch for this ECU. Diagnosis refused."
+
+PHASE D4 - CONTEXT VALIDATION:
+Confirm DTC status (current/pending/history) and symptom relevance.
+If not current or not symptom-relevant: "DTC not causally linked to current fault. No diagnosis permitted."
+
+PHASE D5 - DIAGNOSIS PERMISSION:
+Only after D0-D4 pass: LOCK DTC validated/applicable/relevant, then issue measurement command.
+
+DTC + CRANK-NO-START INTERLOCK:
+- DTCs cannot override locked physical states
+- Electrical survival and ECU power locks take priority
+- DTCs are secondary until engine fundamentals proven
+
+====================================================
+DTC RESPONSE FORMAT
+====================================================
+LOCKED: [vehicle identity + DTC status]
+COMMAND: [single measurement] or "DTC diagnosis refused: [reason]"
+EXPECTED: [pass/fail criteria]
+
+Example valid DTC response:
+LOCKED: 2020 Mercedes C300 Petrol. DTC P0101 validated. MAF circuit range.
+COMMAND: Measure MAF signal voltage at ECU connector pin 45 during idle.
+EXPECTED: 0.8-1.2V at idle = OK. Outside range = MAF sensor or wiring fault.
+
+Example refused DTC response:
+LOCKED: Vehicle - 2018 Ford F-150. DTC P0420 reported.
+COMMAND: DTC diagnosis refused. Vehicle identity incomplete - confirm engine code.
+EXPECTED: N/A
+
+====================================================
+FORBIDDEN LANGUAGE
+====================================================
+- "Usually means" - FORBIDDEN
+- "Common cause" - FORBIDDEN
+- "On most vehicles" - FORBIDDEN
+- "This code indicates" (before validation) - FORBIDDEN
+- "Could be" - FORBIDDEN
+- "Possible causes" - FORBIDDEN"""
+
+# ===================== MODELS =====================
+class StatusCheck(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    client_name: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class StatusCheckCreate(BaseModel):
+    client_name: str
+
+class LoginRequest(BaseModel):
+    name: str
+    email: str
+
+class LoginResponse(BaseModel):
+    technician_id: str
+    token: str
+    name: str
+    email: str
+
+class SessionStartRequest(BaseModel):
+    technician_id: str
+    vehicle_year: Optional[str] = None
+    vehicle_make: Optional[str] = None
+    vehicle_model: Optional[str] = None
+
+class SessionStartResponse(BaseModel):
+    session_id: str
+    live: bool
+    rules_version: str
+    technician_id: str
+    created_at: str
+
+class ChatRequest(BaseModel):
+    session_id: str
+    transcript: str
+    context: Optional[str] = "symptom_audio_diagnostics"  # "diagram_assistance", "visual_inspection", or "symptom_audio_diagnostics"
+
+class ChatResponse(BaseModel):
+    response: str
+    session_id: str
+
+class TTSRequest(BaseModel):
+    text: str
+    session_id: str
+
+class STTResponse(BaseModel):
+    transcript: str
+    confidence: float
+
+# ===================== AUTH ENDPOINTS =====================
+@api_router.post("/auth/login", response_model=LoginResponse)
+async def login(request: LoginRequest):
+    """
+    Simple login - creates or retrieves technician record
+    No password required for DEV mode
+    """
+    logger.info(f"LOGIN REQUEST: name={request.name}, email={request.email}")
+    
+    # Check if technician exists
+    technician = await db.technicians.find_one({"email": request.email}, {"_id": 0})
+    
+    if not technician:
+        # Create new technician
+        technician_id = str(uuid.uuid4())
+        technician = {
+            "id": technician_id,
+            "name": request.name,
+            "email": request.email,
+            "tier": "FREE",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.technicians.insert_one(technician)
+        logger.info(f"LOGIN: Created new technician {technician_id}")
+    else:
+        technician_id = technician["id"]
+        # Update name if changed
+        if technician["name"] != request.name:
+            await db.technicians.update_one(
+                {"email": request.email},
+                {"$set": {"name": request.name}}
+            )
+        logger.info(f"LOGIN: Found existing technician {technician_id}")
+    
+    # Generate simple token (for DEV - in production use JWT)
+    token = f"alexis-token-{technician_id}-{uuid.uuid4().hex[:8]}"
+    
+    return LoginResponse(
+        technician_id=technician_id,
+        token=token,
+        name=request.name,
+        email=request.email
+    )
+
+# ===================== SESSION ENDPOINTS =====================
+@api_router.post("/session/start", response_model=SessionStartResponse)
+async def start_session(request: SessionStartRequest):
+    """
+    Creates a new diagnostic session for the technician
+    Returns session_id and live=true for LIVE READ-ONLY mode
+    """
+    logger.info(f"SESSION START: technician_id={request.technician_id}")
+    
+    session_id = str(uuid.uuid4())
+    created_at = datetime.now(timezone.utc).isoformat()
+    
+    session = {
+        "id": session_id,
+        "technician_id": request.technician_id,
+        "live": True,
+        "rules_version": "ALEXIS_DS_v1.0",
+        "mode": "READ_ONLY",
+        "vehicle": {
+            "year": request.vehicle_year,
+            "make": request.vehicle_make,
+            "model": request.vehicle_model
+        },
+        "conversation_history": [],
+        "created_at": created_at,
+        "updated_at": created_at
+    }
+    
+    await db.sessions.insert_one(session)
+    logger.info(f"SESSION CREATED: session_id={session_id}, live=True, rules_version=ALEXIS_DS_v1.0")
+    
+    return SessionStartResponse(
+        session_id=session_id,
+        live=True,
+        rules_version="ALEXIS_DS_v1.0",
+        technician_id=request.technician_id,
+        created_at=created_at
+    )
+
+# ===================== STT ENDPOINT =====================
+@api_router.post("/stt", response_model=STTResponse)
+async def speech_to_text(audio: UploadFile = File(...)):
+    """
+    Convert audio to text using Azure Speech STT
+    Handles WebM/Opus from browser, converts to WAV for Azure
+    """
+    logger.info(f"STT REQUEST: filename={audio.filename}, content_type={audio.content_type}")
+    
+    if not AZURE_SPEECH_KEY:
+        logger.error("STT FAILED: AZURE_SPEECH_KEY not configured")
+        raise HTTPException(status_code=500, detail="Azure Speech not configured")
+    
+    import subprocess
+    import tempfile
+    import os
+    
+    webm_path = None
+    wav_path = None
+    
+    try:
+        # Read audio data
+        audio_data = await audio.read()
+        logger.info(f"STT: Received {len(audio_data)} bytes of audio")
+        
+        if len(audio_data) < 1000:
+            logger.warning("STT: Audio too short, likely no speech")
+            return STTResponse(transcript="", confidence=0.0)
+        
+        # Convert WebM/Opus to WAV using ffmpeg
+        with tempfile.NamedTemporaryFile(suffix='.webm', delete=False) as webm_file:
+            webm_path = webm_file.name
+            webm_file.write(audio_data)
+        
+        wav_path = webm_path.replace('.webm', '.wav')
+        
+        # FFmpeg conversion: WebM -> WAV (16kHz, mono, 16-bit PCM)
+        # Use full path to ffmpeg for reliability
+        ffmpeg_cmd = [
+            '/usr/bin/ffmpeg', '-y', '-i', webm_path,
+            '-ar', '16000',  # 16kHz sample rate
+            '-ac', '1',      # Mono
+            '-f', 'wav',     # WAV format
+            wav_path
+        ]
+        
+        logger.info(f"STT: Converting audio with ffmpeg: {' '.join(ffmpeg_cmd)}")
+        result = subprocess.run(ffmpeg_cmd, capture_output=True, text=True, timeout=30)
+        
+        if result.returncode != 0:
+            logger.error(f"STT: FFmpeg failed with code {result.returncode}")
+            logger.error(f"STT: FFmpeg stderr: {result.stderr}")
+            logger.error(f"STT: FFmpeg stdout: {result.stdout}")
+            raise HTTPException(status_code=500, detail=f"Audio conversion failed: {result.stderr[:200]}")
+        
+        logger.info(f"STT: FFmpeg conversion successful")
+        
+        # Read converted WAV
+        if not os.path.exists(wav_path):
+            logger.error(f"STT: WAV file not created at {wav_path}")
+            raise HTTPException(status_code=500, detail="WAV file not created")
+            
+        with open(wav_path, 'rb') as wav_file:
+            wav_data = wav_file.read()
+        
+        logger.info(f"STT: Converted to WAV, {len(wav_data)} bytes")
+        
+        if len(wav_data) < 100:
+            logger.error("STT: WAV file too small")
+            raise HTTPException(status_code=500, detail="Audio conversion produced empty file")
+        
+        # Configure Azure Speech
+        speech_config = speechsdk.SpeechConfig(
+            subscription=AZURE_SPEECH_KEY,
+            region=AZURE_SPEECH_REGION
+        )
+        speech_config.speech_recognition_language = "en-US"
+        
+        # Create audio stream from WAV bytes (skip WAV header - 44 bytes)
+        audio_format = speechsdk.audio.AudioStreamFormat(
+            samples_per_second=16000,
+            bits_per_sample=16,
+            channels=1
+        )
+        audio_stream = speechsdk.audio.PushAudioInputStream(stream_format=audio_format)
+        
+        # Write PCM data (skip 44-byte WAV header)
+        pcm_data = wav_data[44:]
+        logger.info(f"STT: Writing {len(pcm_data)} bytes of PCM data to Azure stream")
+        audio_stream.write(pcm_data)
+        audio_stream.close()
+        
+        audio_config = speechsdk.audio.AudioConfig(stream=audio_stream)
+        
+        # Create recognizer
+        recognizer = speechsdk.SpeechRecognizer(
+            speech_config=speech_config,
+            audio_config=audio_config
+        )
+        
+        # Recognize speech
+        logger.info("STT: Starting Azure recognition...")
+        result = recognizer.recognize_once()
+        
+        if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            logger.info(f"STT SUCCESS: transcript='{result.text}'")
+            confidence = 0.95 if result.text else 0.0
+            return STTResponse(transcript=result.text, confidence=confidence)
+        elif result.reason == speechsdk.ResultReason.NoMatch:
+            no_match_details = result.no_match_details
+            logger.warning(f"STT NO MATCH: reason={no_match_details.reason}")
+            return STTResponse(transcript="", confidence=0.0)
+        elif result.reason == speechsdk.ResultReason.Canceled:
+            cancellation = result.cancellation_details
+            logger.error(f"STT CANCELED: reason={cancellation.reason}")
+            logger.error(f"STT CANCELED: error_details={cancellation.error_details}")
+            raise HTTPException(status_code=500, detail=f"Speech recognition canceled: {cancellation.error_details}")
+        
+        return STTResponse(transcript="", confidence=0.0)
+        
+    except subprocess.TimeoutExpired:
+        logger.error("STT: FFmpeg timeout after 30 seconds")
+        raise HTTPException(status_code=500, detail="Audio conversion timeout")
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"STT ERROR: {type(e).__name__}: {str(e)}")
+        import traceback
+        logger.error(f"STT TRACEBACK: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"STT failed: {str(e)}")
+    finally:
+        # Clean up temp files
+        try:
+            if webm_path and os.path.exists(webm_path):
+                os.unlink(webm_path)
+            if wav_path and os.path.exists(wav_path):
+                os.unlink(wav_path)
+        except Exception as cleanup_err:
+            logger.warning(f"STT: Cleanup failed: {cleanup_err}")
+
+# ===================== DIAGNOSTIC CHAT ENDPOINT =====================
+@api_router.post("/diagnostic/chat", response_model=ChatResponse)
+async def diagnostic_chat(request: ChatRequest):
+    """
+    Send transcript to GPT-4.1 for ALEXIS response
+    Context determines prompt:
+    - 'diagram_assistance' = Wiring diagram reading/explanation
+    - 'visual_inspection' = Vision-based component inspection
+    - 'symptom_audio_diagnostics' = Voice/symptom-based fault diagnosis
+    """
+    logger.info(f"CHAT REQUEST: session_id={request.session_id}, context={request.context}, transcript='{request.transcript[:100]}...'")
+    
+    if not EMERGENT_LLM_KEY:
+        logger.error("CHAT FAILED: EMERGENT_LLM_KEY not configured")
+        raise HTTPException(status_code=500, detail="LLM not configured")
+    
+    try:
+        # Get session for context
+        session = await db.sessions.find_one({"id": request.session_id}, {"_id": 0})
+        
+        if not session:
+            logger.warning(f"CHAT: Session {request.session_id} not found, creating temporary context")
+            session = {"vehicle": {}, "conversation_history": []}
+        
+        # Select system prompt based on context - STRICT SEPARATION
+        if request.context == "diagram_assistance":
+            base_prompt = ALEXIS_DIAGRAM_PROMPT
+            logger.info("CHAT: Using DIAGRAM_ASSISTANCE context (Wiring Diagrams)")
+        elif request.context == "visual_inspection":
+            base_prompt = ALEXIS_VISUAL_PROMPT
+            logger.info("CHAT: Using VISUAL_INSPECTION context (Visual Diagnostics)")
+        elif request.context == "symptom_audio_diagnostics":
+            base_prompt = ALEXIS_SYMPTOM_AUDIO_PROMPT
+            logger.info("CHAT: Using SYMPTOM_AUDIO_DIAGNOSTICS context (Voice Diagnostics)")
+        else:
+            # Default fallback - should not happen with proper frontend
+            base_prompt = ALEXIS_SYMPTOM_AUDIO_PROMPT
+            logger.warning(f"CHAT: Unknown context '{request.context}', defaulting to SYMPTOM_AUDIO_DIAGNOSTICS")
+        
+        # Build context-aware system prompt
+        vehicle_context = ""
+        if session.get("vehicle"):
+            v = session["vehicle"]
+            if v.get("year") or v.get("make") or v.get("model"):
+                vehicle_context = f"\n\n## CURRENT VEHICLE\nYear: {v.get('year', 'Unknown')}\nMake: {v.get('make', 'Unknown')}\nModel: {v.get('model', 'Unknown')}"
+        
+        full_system_prompt = base_prompt + vehicle_context
+        
+        # Build conversation history for context with format reinforcement
+        history = session.get("conversation_history", [])
+        initial_messages = []
+        for entry in history[-10:]:  # Last 10 messages for context
+            if entry.get("role") == "technician":
+                initial_messages.append({"role": "user", "content": entry["text"]})
+            elif entry.get("role") == "alexis":
+                initial_messages.append({"role": "assistant", "content": entry["text"]})
+        
+        # Add format reinforcement if there's history (for symptom diagnostics)
+        format_reminder = ""
+        if history and request.context == "symptom_audio_diagnostics":
+            format_reminder = "\n\n[REMINDER: Respond ONLY in LOCKED/COMMAND/EXPECTED format. No questions. No explanations. No lists.]"
+        
+        # Initialize LlmChat with GPT-4.1
+        chat = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=request.session_id,
+            system_message=full_system_prompt + format_reminder,
+            initial_messages=initial_messages if initial_messages else None
+        )
+        chat.with_model("openai", "gpt-4.1")
+        
+        # Send current message with format enforcement for symptom diagnostics
+        if request.context == "symptom_audio_diagnostics":
+            enforced_transcript = f"{request.transcript}\n\n[Respond ONLY in format: LOCKED: / COMMAND: / EXPECTED: - nothing else]"
+            user_message = UserMessage(text=enforced_transcript)
+        else:
+            user_message = UserMessage(text=request.transcript)
+        logger.info("CHAT: Sending to GPT-4.1...")
+        
+        response = await chat.send_message(user_message)
+        logger.info(f"CHAT SUCCESS: response='{response[:100]}...'")
+        
+        # Update session conversation history
+        await db.sessions.update_one(
+            {"id": request.session_id},
+            {
+                "$push": {
+                    "conversation_history": {
+                        "$each": [
+                            {"role": "technician", "text": request.transcript, "timestamp": datetime.now(timezone.utc).isoformat()},
+                            {"role": "alexis", "text": response, "timestamp": datetime.now(timezone.utc).isoformat()}
+                        ]
+                    }
+                },
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            }
+        )
+        
+        # Log to audit
+        await db.audit_events.insert_one({
+            "id": str(uuid.uuid4()),
+            "session_id": request.session_id,
+            "event_type": "chat",
+            "input": request.transcript,
+            "output": response,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return ChatResponse(response=response, session_id=request.session_id)
+        
+    except Exception as e:
+        logger.error(f"CHAT ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
+
+# ===================== TTS ENDPOINT =====================
+@api_router.post("/tts")
+async def text_to_speech(request: TTSRequest):
+    """
+    Convert ALEXIS response text to speech using Azure TTS REST API
+    Voice: Ava (female, en-US)
+    Output: audio/mp3 stream
+    Falls back to simple response if Azure fails
+    """
+    logger.info(f"TTS REQUEST: session_id={request.session_id}, text='{request.text[:100]}...'")
+    
+    if not AZURE_SPEECH_KEY:
+        logger.warning("TTS: AZURE_SPEECH_KEY not configured, returning fallback")
+        raise HTTPException(status_code=503, detail="TTS not configured - use browser speech synthesis")
+    
+    try:
+        import requests as http_requests
+        
+        # Use Azure TTS REST API
+        tts_url = f"https://{AZURE_SPEECH_REGION}.tts.speech.microsoft.com/cognitiveservices/v1"
+        
+        # Clean text for SSML (escape special characters)
+        clean_text = request.text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&apos;")
+        # Remove markdown formatting for speech
+        clean_text = clean_text.replace("**", "").replace("*", "").replace("#", "")
+        
+        # SSML for Ava voice
+        ssml = f"""<speak version='1.0' xml:lang='en-US'>
+            <voice xml:lang='en-US' name='en-US-AvaNeural'>
+                {clean_text}
+            </voice>
+        </speak>"""
+        
+        headers = {
+            "Ocp-Apim-Subscription-Key": AZURE_SPEECH_KEY,
+            "Content-Type": "application/ssml+xml",
+            "X-Microsoft-OutputFormat": "audio-16khz-128kbitrate-mono-mp3",
+            "User-Agent": "ALEXIS-Diagnostic-System"
+        }
+        
+        logger.info("TTS: Sending request to Azure TTS REST API...")
+        response = http_requests.post(tts_url, headers=headers, data=ssml.encode('utf-8'), timeout=30)
+        
+        if response.status_code == 200:
+            audio_data = response.content
+            logger.info(f"TTS SUCCESS: Generated {len(audio_data)} bytes of audio")
+            
+            # Log to audit
+            await db.audit_events.insert_one({
+                "id": str(uuid.uuid4()),
+                "session_id": request.session_id,
+                "event_type": "tts",
+                "input": request.text[:500],
+                "output_size": len(audio_data),
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            })
+            
+            # Return audio as streaming response
+            return StreamingResponse(
+                io.BytesIO(audio_data),
+                media_type="audio/mpeg",
+                headers={"Content-Disposition": "attachment; filename=alexis_response.mp3"}
+            )
+        else:
+            logger.error(f"TTS API ERROR: status={response.status_code}, body={response.text[:200]}")
+            # Return 503 to signal frontend to use browser TTS
+            raise HTTPException(status_code=503, detail=f"Azure TTS unavailable (status {response.status_code}) - use browser speech synthesis")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"TTS ERROR: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"TTS failed: {str(e)} - use browser speech synthesis")
+
+# ===================== ORIGINAL ENDPOINTS =====================
+@api_router.get("/")
+async def root():
+    return {"message": "ALEXIS Backend API - LIVE READ-ONLY Mode"}
+
+@api_router.post("/status", response_model=StatusCheck)
+async def create_status_check(input: StatusCheckCreate):
+    status_dict = input.model_dump()
+    status_obj = StatusCheck(**status_dict)
+    doc = status_obj.model_dump()
+    doc['timestamp'] = doc['timestamp'].isoformat()
+    _ = await db.status_checks.insert_one(doc)
+    return status_obj
+
+@api_router.get("/status", response_model=List[StatusCheck])
+async def get_status_checks():
+    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+    for check in status_checks:
+        if isinstance(check['timestamp'], str):
+            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    return status_checks
+
+# Include the router in the main app
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()

@@ -1,0 +1,144 @@
+<analysis>**original_problem_statement:**
+The user wants to build a pixel-perfect clone of a diagnostics platform, starting with a dashboard page and adding other pages sequentially. The design, layout, colors, and branding must exactly match the provided images, with a specific focus on a high-polish chrome and dark glossy blue aesthetic.
+
+The core of the application is an AI assistant named ALEXIS. The user has provided an exhaustive and non-negotiable ALEXIS Diagnostic Standard that dictates ALEXIS's behavior. ALEXIS must act as a diagnostic reasoning assistant, not a simple chatbot. This includes following a strict, evidence-based diagnostic process, managing hypotheses, verifying fundamentals (power, ground, comms) before making conclusions, and interacting with the technician in a calm, precise, and respectful tone.
+
+The application should eventually integrate OpenAI GPT-4.1 for reasoning and Microsoft Azure Speech Services (with the Ava female voice) for Speech-to-Text (STT) and Text-to-Speech (TTS). The user has also detailed a login flow, pricing tiers (Free vs. Advanced), session management, and a future-proof plugin architecture. The entire platform must operate in a  mode, with no ECU writes or other unsafe actions enabled.
+
+**User's preferred language**: English
+
+**what currently exists?**
+The project consists of a React frontend and a FastAPI backend. The frontend has a persistent sidebar and a main content area, with several pages built out as UI shells with mocked data and interactions. These pages include a Dashboard, Visual Diagnostics, Voice Diagnostics, and a multi-page flow for Wiring Diagrams. The UI has undergone extensive iteration to match the user's specific chrome branding and layout requirements for the SA Diagnostic Solutions and ALEXIS logos. A comprehensive  has been co-created with the user and documented through a series of JSON contracts in the chat history.
+
+**Last working item**:
+The user is expressing extreme frustration that the voice and AI features are not working, believing they should be live. The agent has just finished clarifying the plan to start the backend implementation, but the user's message indicates a critical misunderstanding of the project's current state (mock UI vs. live functionality).
+    - Last item agent was working: The agent was about to begin the backend implementation for  mode, starting with the session/login flow and then wiring up the  page with real Azure STT and GPT-4.1 reasoning. This is in direct response to the user's demand to make the system functional.
+    - Status: NOT STARTED
+    - Agent Testing Done: N
+    - Which testing method agent to use? backend testing agent
+    - User Testing Done: Y (The user has tested the UI and is reporting the core functionality is missing.)
+
+**All Pending/In progress Issue list**:
+  - **Issue 1 (P0): Voice and AI features are not implemented.** This is the primary source of user frustration. The user expects live voice interaction with ALEXIS, but the entire application is currently a UI mock.
+  - **Issue 2 (P1): PDF viewer may be broken.** The PDF viewer on the  page has had multiple implementation issues with its  worker. The latest fix (copying the worker to ) needs verification.
+
+  **Issues Detail:**
+  - **Issue 1: Voice and AI features are not implemented.**
+     - Attempted fixes: The agent has created the UI shells and defined API contracts in . The user has been informed of the mock status, but the message has not been fully understood.
+     - Next debug checklist:
+       1. Implement the backend API endpoints as defined in the user's specifications: , ,  (for Azure STT),  (for GPT-4.1 reasoning), and  (for Azure Ava TTS).
+       2. The GPT-4.1 endpoint **must** use the complete ALEXIS Diagnostic Standard (defined via JSON in the chat history) as its system prompt.
+       3. Wire the frontend  page to these new endpoints, replacing the mock logic.
+     - Why fix this issue and what will be achieved with the fix?: This will provide the first piece of live functionality the user is demanding, turning the mock UI into a working  application and resolving the main point of user frustration.
+     - Status: NOT STARTED
+     - Is recurring issue? Y
+     - Should Test frontend/backend/both after fix?: Both
+
+  - **Issue 2: PDF viewer may be broken.**
+     - Attempted fixes: Previous attempts to load the  worker via CDN,  import, and  all failed. The current attempt involves a static file in .
+     - Next debug checklist:
+       1. Navigate to .
+       2. Attempt to upload a PDF file.
+       3. Check the browser's Network tab for any 404 errors related to .
+       4. Check the Console tab for any JavaScript errors from .
+     - Why fix this issue and what will be achieved with the fix?: The Wiring Diagrams feature is a key part of the application and is unusable without a working PDF viewer.
+     - Status: TESTING PENDING
+     - Is recurring issue? Y
+     - Should Test frontend/backend/both after fix?: Frontend
+
+**In progress Task List**:
+  - **Task 1: Implement Backend for  Mode**
+     - Where to resume: Begin by implementing the  and  endpoints in the FastAPI backend (). Use the user-defined  as the data model. This will establish a real session context, removing the need for dev-mode hacks.
+     - What will be achieved with this?: This is the foundational step to move the application from a mock UI to a real, session-aware application.
+     - Status: NOT STARTED
+     - Should Test frontend/backend/both after fix?: Backend
+
+**Upcoming and Future Tasks**
+   **Upcoming Tasks:**
+    - **P0: Implement Backend for Voice/AI on **: Create FastAPI endpoints for Azure STT, GPT-4.1 reasoning (using the full ALEXIS Standard as the prompt), and Azure TTS (Ava).
+    - **P0: Wire Frontend for **: Connect the mic, send buttons, and audio playback to the new backend endpoints, gated by a live session.
+    - **P1: Implement Real Login/Session Flow**: Complete the backend login/session endpoints and update the frontend  page and contexts to use this flow, removing the dev bypass.
+    - **P1: Extend Live AI to  and **: Reuse the backend endpoints to make these pages live.
+
+   **Future Tasks:**
+    - Implement  and  backend endpoints to serve read-only data.
+    - Implement the Stripe payment flow (, ) for the ADVANCED tier.
+    - Build the internal-only Admin UI for session audit, plugin management, voice debug, and certification.
+    - Implement the OEM Plugin Architecture, including signature verification.
+    - Generate the  document.
+
+**Completed work in this session**
+- **UI/Layout Implementation**: Iteratively designed and refined the UI for the Dashboard, Visual Diagnostics, Voice Diagnostics, and Wiring Diagrams pages to match the user's high-polish chrome aesthetic.
+- **Branding**: Implemented and repeatedly updated the SA Diagnostic Solutions and ALEXIS chrome logos per detailed user feedback.
+- **Routing**: Established a clear routing structure with components for all major application sections.
+- **ALEXIS Diagnostic Standard Definition**: Collaboratively defined a comprehensive, non-negotiable set of rules for ALEXIS's behavior, covering reasoning, safety, session management, and conversational tone. This standard is documented in a series of JSON objects in the conversation history.
+
+**Earlier issues found/mentioned but not fixed**
+   - None, the main issue is the un-started backend work.
+
+**Known issue recurrence from previous fork**
+- N/A
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Frontend**: React, React Router, Tailwind CSS, Shadcn UI.
+- **Backend**: FastAPI, MongoDB (via ).
+- **AI/ML (Planned)**: OpenAI GPT-4.1 for reasoning, Azure Speech Services for STT and TTS.
+- **Architecture**:  mode, session-based authentication, strict rule-based AI behavior defined by the ALEXIS Diagnostic Standard.
+
+**key DB schema**
+The user has defined authoritative schemas for , , , , and . These are not yet implemented. The current MongoDB setup is minimal. The next step is to implement these schemas in the backend.
+
+**All files of reference**
+- : The main application shell containing the persistent sidebar and top header band.
+- : The first page to be integrated with the live backend.
+- : The manually copied worker file for the  library. Its functionality is pending verification.
+- : The FastAPI server file where all new backend endpoints will be added.
+- : Defines the initial API contracts for transcription and chat.
+
+**Critical Info for New Agent**
+- **User Frustration is High:** The user is under the impression that the application should be functional with live voice and AI. They are frustrated that it is still a mock UI. Your immediate priority is to implement the backend to make at least one feature live, starting with the **Wiring PDF Upload** page.
+- **The ALEXIS Standard is NON-NEGOTIABLE:** The user has provided a detailed, multi-part ALEXIS Diagnostic Standard (in JSON and text). This standard **MUST** be used as the system prompt for all GPT-4.1 interactions. ALEXIS is a reasoning assistant, not a chatbot.
+- ** Mode:** All development must adhere to this mode. No ECU writes, actuator commands, or other unsafe actions are permitted.
+- **Visuals are Crucial:** The user is extremely particular about the visual design. Do not change colors, logos, or layouts without explicit instruction. The high-polish chrome and dark navy/purple-blue theme is locked in.
+- **Start with Session/Login:** The first backend task is to implement the real login and session start flow (, ) to establish a proper  context. This will gate all live features.
+- **PDF Viewer is a Risk:** The  implementation has been problematic. Verify it works before building more on top of it.
+
+**documents and test reports created in this job**
+  - /app/contracts.md
+
+**Last 10 User Messages and any pending HUMAN messages**
+1.  **User**: Fix voice diagnostics, it's not working. Test the whole app.
+2.  **Agent**: Explains that the app is currently UI-only (mocked) and that backend integration hasn't started yet. Proposes a plan to start the integration.
+3.  **User**: Agrees to the plan to implement live logic for Login, Devices, Console, and Voice, while keeping others as UI-only.
+4.  **User**: Defines the mandatory login flow, requiring name, email, and acceptance of the ALEXIS standard, creating a FREE, READ-ONLY LIVE session.
+5.  **User**: Defines the ALEXIS Diagnostic Standard v1.0, to be used for rules acceptance.
+6.  **User**: Defines pricing tiers (FREE, ADVANCED) and when the paywall should trigger (not at login).
+7.  **User**: Provides About the Founders copy.
+8.  **User**: Provides the definitive system role prompt for ALEXIS.
+9.  **User**: Provides the LIVE READ-ONLY mode configuration.
+10. **User**: Provides the full frontend route structure, including public and protected routes.
+
+**Project Health Check:**
+- **Broken**: Core voice and AI functionality is missing, which the user perceives as broken. The PDF viewer on the wiring diagram upload page is unverified and likely still broken.
+- **Mocked**: All diagnostic logic, ALEXIS responses, voice transcription, and data for pages like Devices and Diagnostic Console are currently mocked in the frontend.
+
+**3rd Party Integrations**
+- **OpenAI GPT-4.1** (Planned) — For ALEXIS's diagnostic reasoning. Will use the **Emergent LLM Key**.
+- **Microsoft Azure Speech Services** (Planned) — For STT and TTS (using Ava female voice). Requires the **User API Key** provided in the chat history ( region).
+- **Stripe** (Planned for future) — For payment processing to unlock the  tier. Requires a **User API Key**.
+
+**Testing status**
+- Testing agent used after significant changes: NO
+- Troubleshoot agent used after agent stuck in loop: NO
+- Test files created: None.
+- Known regressions: None.
+
+**Credentials to test flow:**
+- **Azure Speech Key & Region:** Provided by the user in chat messages 228 and 513. Use  as the region.
+- **OpenAI:** Will be handled by the Emergent LLM Key.
+
+**What agent forgot to execute**
+The agent repeatedly failed to manage the user's expectations regarding the application's state (mock vs. live), leading to significant frustration. While the agent has gathered extensive and excellent specifications for the ALEXIS standard, it has not yet started implementing the core backend functionality that the user has been asking for. The PDF viewer issue also remains unresolved and unverified.</analysis>
