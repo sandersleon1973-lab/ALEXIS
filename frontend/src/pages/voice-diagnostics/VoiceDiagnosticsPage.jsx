@@ -276,7 +276,7 @@ const VoiceDiagnosticsPage = () => {
       <div className="flex-shrink-0 mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-wide text-slate-100">
+            <h1 className="text-2xl font-semibold tracking-wide text-slate-100" data-testid="voice-diagnostics-title">
               Voice Diagnostics
             </h1>
             <p className="mt-1 text-sm text-slate-300/90">
