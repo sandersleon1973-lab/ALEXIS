@@ -31,37 +31,37 @@
     content: "";
     position: absolute;
     top: 50%;
-    height: 2px;
-    width: 120px;
+    height: 1px;
+    width: 92px;
     transform: translateY(-50%);
     opacity: 0.0;
     pointer-events: none;
 }
 
 .alexis-logo-wrap::before {
-    left: 18px;
-    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.92), rgba(0,0,0,0));
-    filter: blur(0.25px);
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.45);
-    animation: alexis-line-blue 1.35s ease-in-out infinite;
+    left: 24px;
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.95), rgba(0,0,0,0));
+    filter: blur(0.35px);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.38);
+    animation: alexis-line-blue 1.6s ease-in-out infinite;
 }
 
 .alexis-logo-wrap::after {
-    right: 18px;
-    background: linear-gradient(270deg, rgba(0,0,0,0), rgba(248,113,113,0.9), rgba(0,0,0,0));
-    filter: blur(0.25px);
-    box-shadow: 0 0 10px rgba(248, 113, 113, 0.35);
-    animation: alexis-line-red 1.35s ease-in-out infinite;
+    right: 24px;
+    background: linear-gradient(270deg, rgba(0,0,0,0), rgba(248,113,113,0.92), rgba(0,0,0,0));
+    filter: blur(0.35px);
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.3);
+    animation: alexis-line-red 1.6s ease-in-out infinite;
 }
 
 @keyframes alexis-line-blue {
-    0%, 100% { opacity: 0.18; }
-    50% { opacity: 0.7; }
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.48; }
 }
 
 @keyframes alexis-line-red {
-    0%, 100% { opacity: 0.14; }
-    50% { opacity: 0.65; }
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.44; }
 }
 
 .alexis-text {
@@ -83,23 +83,23 @@
 
 /* ALEXIS logo subtle police-light pulse (blue + red) */
 .alexis-logo-pulse {
-    animation: alexis-pulse 1.35s ease-in-out infinite;
+    animation: alexis-pulse 1.8s ease-in-out infinite;
     filter:
-        drop-shadow(0 0 10px rgba(56, 189, 248, 0.35))
-        drop-shadow(0 0 10px rgba(248, 113, 113, 0.22));
+        drop-shadow(0 0 8px rgba(56, 189, 248, 0.22))
+        drop-shadow(0 0 8px rgba(248, 113, 113, 0.16));
 }
 
 @keyframes alexis-pulse {
     0%, 100% {
-        opacity: 0.88;
+        opacity: 0.92;
         filter:
-            drop-shadow(0 0 8px rgba(56, 189, 248, 0.22))
-            drop-shadow(0 0 8px rgba(248, 113, 113, 0.14));
+            drop-shadow(0 0 7px rgba(56, 189, 248, 0.18))
+            drop-shadow(0 0 7px rgba(248, 113, 113, 0.12));
     }
     50% {
         opacity: 1;
         filter:
-            drop-shadow(0 0 16px rgba(56, 189, 248, 0.42))
-            drop-shadow(0 0 14px rgba(248, 113, 113, 0.28));
+            drop-shadow(0 0 11px rgba(56, 189, 248, 0.28))
+            drop-shadow(0 0 10px rgba(248, 113, 113, 0.2));
     }
 }
