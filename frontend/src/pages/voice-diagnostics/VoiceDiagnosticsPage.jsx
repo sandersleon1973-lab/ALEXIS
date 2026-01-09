@@ -91,21 +91,28 @@ const VoiceDiagnosticsPage = () => {
       if (!voiceSessionInitPromise) {
         voiceSessionInitPromise = (async () => {
           setStatus("Connecting...");
+
           const loginRes = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: "Technician", email: "tech@alexis.local" })
-      });
-      const loginData = await loginRes.json();
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "Technician", email: "tech@alexis.local" })
+          });
+          const loginData = await loginRes.json();
 
-      const sessionRes = await fetch(`${API_URL}/api/session/start`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ technician_id: loginData.technician_id })
-      });
-      const sessionData = await sessionRes.json();
+          const sessionRes = await fetch(`${API_URL}/api/session/start`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ technician_id: loginData.technician_id })
+          });
+          const sessionData = await sessionRes.json();
 
-      if (sessionData.live) {
+          return sessionData;
+        })();
+      }
+
+      const sessionData = await voiceSessionInitPromise;
+
+      if (sessionData?.live) {
         voiceCachedSessionId = sessionData.session_id;
         setSessionId(sessionData.session_id);
         setStatus("LIVE - Symptom Diagnostics");
