@@ -197,6 +197,7 @@ const VoiceDiagnosticsPage = () => {
     if (mediaRecorderRef.current && isRecording) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
+      setInitState("ANALYZING");
       setStatus("Processing speech...");
     }
   };
