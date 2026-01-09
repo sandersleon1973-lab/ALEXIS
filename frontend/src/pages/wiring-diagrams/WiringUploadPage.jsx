@@ -392,6 +392,7 @@ const WiringUploadPage = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => document.getElementById("pdf-input").click()}
+                data-testid="wiring-upload-select-pdf-button"
                 className="h-9 px-4 bg-slate-800 border-slate-600 text-slate-100 hover:bg-slate-700 text-xs uppercase tracking-wider font-semibold"
               >
                 Select PDF
