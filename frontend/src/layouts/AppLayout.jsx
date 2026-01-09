@@ -92,6 +92,7 @@ const AppLayout = () => {
               src="https://customer-assets.emergentagent.com/job_diag-platform-1/artifacts/edk41f92_image.png"
               alt="ALEXIS logo"
               className="h-full w-auto object-contain opacity-100 visible transform scale-[1.22]"
+              data-testid="header-alexis-logo"
             />
           </div>
 
