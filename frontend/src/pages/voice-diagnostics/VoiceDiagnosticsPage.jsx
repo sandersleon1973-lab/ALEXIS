@@ -58,11 +58,18 @@ const VoiceDiagnosticsPage = () => {
   const armMicrophone = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop());
+      stream.getTracks().forEach((t) => t.stop());
       setMicReady(true);
     } catch (err) {
       setMicReady(false);
-      setSttError("Microphone access denied. Please allow microphone permission.");
+      const name = err?.name;
+      if (name === "NotAllowedError" || name === "SecurityError") {
+        setSttError("Microphone permission blocked. Allow mic access in Chrome site settings.");
+      } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        setSttError("No microphone device found. Connect a mic/headset and retry.");
+      } else {
+        setSttError("Microphone unavailable. Please check permissions and device.");
+      }
     }
   };
 
