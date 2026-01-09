@@ -41,6 +41,7 @@ const AppLayout = () => {
               src="https://customer-assets.emergentagent.com/job_diag-platform-1/artifacts/o9ft2qn0_ChatGPT%20Image%20Jan%202%2C%202026%2C%2003_53_58%20PM%20%281%29.png"
               alt="SA Diagnostic Solutions logo"
               className="h-[144px] w-full object-contain sa-logo-img"
+              data-testid="sidebar-sa-logo"
             />
           </div>
 
