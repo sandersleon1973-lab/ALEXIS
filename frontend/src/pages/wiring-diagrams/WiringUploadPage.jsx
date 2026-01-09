@@ -437,7 +437,7 @@ const WiringUploadPage = () => {
           </div>
 
           {/* PDF Display Area */}
-          <div className="flex-1 overflow-auto bg-slate-950 p-4">
+          <div className="flex-1 overflow-auto bg-slate-950 p-4" data-testid="wiring-upload-pdf-container">
             {pdfError ? (
               <div className="h-full flex items-center justify-center text-red-400 text-sm">{pdfError}</div>
             ) : selectedFile ? (
