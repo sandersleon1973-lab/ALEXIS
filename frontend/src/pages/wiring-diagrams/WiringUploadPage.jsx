@@ -8,8 +8,8 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 
 // Worker path (Emergent / CRA-safe)
-// Served from /public to avoid module resolution issues.
-pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.mjs`;
+// Use bundled worker import (ESM) to avoid runtime worker resolution failures.
+pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
