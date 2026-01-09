@@ -368,6 +368,7 @@ const VoiceDiagnosticsPage = () => {
             <div className="flex-1 flex flex-col gap-2">
               <Textarea
                 value={technicianTranscript}
+                data-testid="voice-diagnostics-transcript-input"
                 onChange={(e) => setTechnicianTranscript(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
                 placeholder={isRecording ? "Listening..." : "Describe the symptom: what happens, when, how often..."}
