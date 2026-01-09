@@ -91,7 +91,7 @@ const AppLayout = () => {
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
-              className="h-full w-auto object-contain opacity-100 visible transform scale-[1.22]"
+              className="h-[56px] w-auto object-contain opacity-100 visible" style={{ filter: "drop-shadow(0 10px 26px rgba(0,0,0,0.55))" }}
               data-testid="header-alexis-logo"
             />
           </div>
