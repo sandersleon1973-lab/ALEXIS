@@ -18,7 +18,49 @@
 }
 
 
-/* (intentionally blank) */
+/* Thin neon blue + red lines through the ALEXIS logo (no layout movement) */
+.alexis-logo-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.alexis-logo-wrap::before,
+.alexis-logo-wrap::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 128px;
+    height: 1px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    filter: blur(0.3px);
+}
+
+.alexis-logo-wrap::before {
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.95), rgba(0,0,0,0));
+    box-shadow: 0 0 10px rgba(56,189,248,0.42);
+    animation: alexis-line-pulse-blue 1.55s ease-in-out infinite;
+}
+
+.alexis-logo-wrap::after {
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(248,113,113,0.9), rgba(0,0,0,0));
+    box-shadow: 0 0 10px rgba(248,113,113,0.32);
+    animation: alexis-line-pulse-red 1.55s ease-in-out infinite;
+}
+
+@keyframes alexis-line-pulse-blue {
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.55; }
+}
+
+@keyframes alexis-line-pulse-red {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.5; }
+}
 .alexis-text {
     font-weight: 600;
     /* Multi-directional text shadow to fake bevel; very tight so it is not a glow */
@@ -36,4 +78,46 @@
 }
 
 
-/* (intentionally blank) */
+/* Thin neon blue + red lines through the ALEXIS logo (no layout movement) */
+.alexis-logo-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.alexis-logo-wrap::before,
+.alexis-logo-wrap::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 128px;
+    height: 1px;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    opacity: 0;
+    filter: blur(0.3px);
+}
+
+.alexis-logo-wrap::before {
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(56,189,248,0.95), rgba(0,0,0,0));
+    box-shadow: 0 0 10px rgba(56,189,248,0.42);
+    animation: alexis-line-pulse-blue 1.55s ease-in-out infinite;
+}
+
+.alexis-logo-wrap::after {
+    background: linear-gradient(90deg, rgba(0,0,0,0), rgba(248,113,113,0.9), rgba(0,0,0,0));
+    box-shadow: 0 0 10px rgba(248,113,113,0.32);
+    animation: alexis-line-pulse-red 1.55s ease-in-out infinite;
+}
+
+@keyframes alexis-line-pulse-blue {
+    0%, 100% { opacity: 0.12; }
+    50% { opacity: 0.55; }
+}
+
+@keyframes alexis-line-pulse-red {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.5; }
+}
