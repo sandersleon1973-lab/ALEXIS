@@ -397,6 +397,7 @@ const VisualDiagnosticsPage = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleCaptureFrame}
+                  data-testid="visual-diagnostics-capture-button"
                   className="h-8 px-3 bg-purple-900/50 border-purple-500/50 text-xs uppercase tracking-wider"
                 >
                   Capture
