@@ -136,6 +136,7 @@ const VoiceDiagnosticsPage = () => {
         }
       } else {
         setStatus("Offline");
+        setInitState("ERROR");
       }
     } catch (err) {
       console.error("Session init error:", err);
