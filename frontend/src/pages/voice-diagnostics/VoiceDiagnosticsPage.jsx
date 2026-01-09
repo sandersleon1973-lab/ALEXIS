@@ -353,6 +353,7 @@ const VoiceDiagnosticsPage = () => {
               variant="outline"
               onClick={toggleMic}
               disabled={isProcessing || !sessionId}
+              data-testid="voice-diagnostics-mic-button"
               className={`h-16 w-16 rounded-full p-0 flex-shrink-0 transition-all ${
                 isRecording 
                   ? 'bg-red-600 border-red-500 text-white animate-pulse scale-110' 
