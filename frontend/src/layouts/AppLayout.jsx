@@ -38,7 +38,7 @@ const AppLayout = () => {
           {/* Brand */}
           <div className="px-2 pt-4 pb-5 border-b border-slate-500/30 flex items-center justify-start">
             <img
-              src="https://customer-assets.emergentagent.com/job_diag-platform-1/artifacts/o9ft2qn0_ChatGPT%20Image%20Jan%202%2C%202026%2C%2003_53_58%20PM%20%281%29.png"
+              src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
               className="h-[144px] w-full object-contain sa-logo-img"
               data-testid="sidebar-sa-logo"
@@ -81,15 +81,15 @@ const AppLayout = () => {
           {/* Top header brand band */}
           <div className="absolute top-0 left-10 flex items-center h-[90px] z-10">
             <img
-              src="https://customer-assets.emergentagent.com/job_diag-platform-1/artifacts/o9ft2qn0_ChatGPT%20Image%20Jan%202%2C%202026%2C%2003_53_58%20PM%20%281%29.png"
+              src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
               className="h-[86px] w-auto object-contain"
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-2 right-10 flex items-center justify-end h-[60px] w-[320px] z-10">
+          <div className="absolute top-1 right-10 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(-19px, -8px)" }}>
             <img
-              src="https://customer-assets.emergentagent.com/job_diag-platform-1/artifacts/edk41f92_image.png"
+              src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
               className="h-full w-auto object-contain opacity-100 visible transform scale-[1.22]"
               data-testid="header-alexis-logo"
