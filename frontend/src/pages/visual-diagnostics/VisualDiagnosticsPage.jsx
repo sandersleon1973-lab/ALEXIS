@@ -85,7 +85,7 @@ const VisualDiagnosticsPage = () => {
         // Initial ALEXIS greeting for visual inspection
         setConversation([{
           role: "alexis",
-          text: "I'm ready to help you with visual inspection. You can:\n\n• Show me a component using your camera\n• Upload an image of the part you're inspecting\n• Ask me to identify a component or connection\n• Request verification of proper installation\n\nWhat would you like me to look at?"
+          text: "I'm ready to help you with visual inspection. You can:\n\n• Show me a component using your camera\n• Upload an image of the part you’re inspecting\n• Ask me to identify a component or connection\n• Request verification of proper installation\n\nWhat would you like me to look at?"
         }]);
       } else {
         setStatus("Offline");
