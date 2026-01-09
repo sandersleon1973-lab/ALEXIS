@@ -87,7 +87,7 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-[-12px] right-10 flex items-center justify-end h-[90px] z-10 alexis-logo-wrap" data-testid="header-alexis-logo-wrap">
+          <div className="absolute top-[-12px] right-10 flex items-center justify-end h-[90px] z-10" data-testid="header-alexis-logo-wrap">
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/x0yzu0m5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2001_23_13%20AM.png"
               alt="ALEXIS logo"
