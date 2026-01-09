@@ -23,6 +23,12 @@ const VoiceDiagnosticsPage = () => {
   const audioChunksRef = useRef([]);
   const conversationEndRef = useRef(null);
 
+  // Lockdown guards (React 18 StrictMode runs effects twice in dev)
+  const initOnceRef = useRef(false);
+  const greetedRef = useRef(false);
+  const initAbortRef = useRef(null);
+
+
   // Pre-load browser voices
   useEffect(() => {
     const loadVoices = () => window.speechSynthesis.getVoices();
