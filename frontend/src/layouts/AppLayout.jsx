@@ -36,11 +36,11 @@ const AppLayout = () => {
         {/* Sidebar */}
         <aside className="w-[260px] bg-gradient-to-b from-slate-950/95 via-slate-950/90 to-black/95 border-r border-slate-500/40 relative flex flex-col" data-testid="sidebar">
           {/* Brand */}
-          <div className="px-2 pt-2 pb-4 border-b border-slate-500/30 flex items-center justify-start">
+          <div className="pl-4 pr-2 pt-3 pb-4 border-b border-slate-500/30 flex items-start justify-start">
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
-              className="h-[218px] w-full object-contain sa-logo-img" style={{ paddingTop: "2px" }}
+              className="h-[218px] w-auto object-contain sa-logo-img" style={{ paddingTop: "2px" }}
               data-testid="sidebar-sa-logo"
             />
           </div>
@@ -87,7 +87,7 @@ const AppLayout = () => {
               data-testid="header-sa-logo"
             />
           </div>
-          <div className="absolute top-1 right-10 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(36px, -12px)" }}>
+          <div className="absolute top-0 right-10 flex items-center justify-center h-[60px] w-[320px] z-10" style={{ transform: "translate(93px, -12px)" }}>
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/4z758eq0_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_40_06%20AM.png"
               alt="ALEXIS logo"
