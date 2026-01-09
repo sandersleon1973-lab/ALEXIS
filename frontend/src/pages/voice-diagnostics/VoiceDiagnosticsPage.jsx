@@ -347,7 +347,7 @@ const VoiceDiagnosticsPage = () => {
     }
     if (selectedVoice) utterance.voice = selectedVoice;
     
-    utterance.onend = () => { setIsSpeaking(false); setStatus("LIVE - Symptom Diagnostics"); };
+    utterance.onend = () => { setIsSpeaking(false); setStatus("LIVE - Symptom Diagnostics"); setInitState("LIVE"); };
     utterance.onerror = () => { setIsSpeaking(false); setStatus("LIVE - Symptom Diagnostics"); };
     window.speechSynthesis.speak(utterance);
   };
