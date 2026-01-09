@@ -487,6 +487,7 @@ const VisualDiagnosticsPage = () => {
             <div className="flex gap-2">
               <Textarea
                 value={transcript}
+                data-testid="visual-diagnostics-transcript-input"
                 onChange={(e) => setTranscript(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
                 placeholder={isRecording ? "Listening..." : "Describe what you see or ask about a component..."}
