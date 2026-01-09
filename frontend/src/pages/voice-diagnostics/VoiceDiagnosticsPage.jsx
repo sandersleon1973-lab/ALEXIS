@@ -322,6 +322,17 @@ const VoiceDiagnosticsPage = () => {
 
       if (ttsRes.ok) {
         const audioBlob = await ttsRes.blob();
+          {initState === "ERROR" && (
+            <Button
+              variant="outline"
+              onClick={handleRetryConnection}
+              data-testid="voice-diagnostics-retry-connection-button"
+              className="border-slate-700 bg-slate-950 text-slate-100 hover:bg-slate-900"
+            >
+              Retry connection
+            </Button>
+          )}
+
         if (audioBlob.size > 100) {
           const audioUrl = URL.createObjectURL(audioBlob);
           const audio = new Audio(audioUrl);
