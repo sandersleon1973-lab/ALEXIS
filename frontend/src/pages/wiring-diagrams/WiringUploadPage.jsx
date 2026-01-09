@@ -528,7 +528,7 @@ const WiringUploadPage = () => {
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }}}
                 placeholder={isRecording ? "Listening..." : "Ask about symbols, circuits, connectors, or pinouts..."}
                 className="flex-1 min-h-[48px] max-h-[96px] resize-none bg-slate-950 border-slate-700 text-sm text-slate-100 placeholder:text-slate-500"
-                data-testid="transcript-input"
+                data-testid="wiring-upload-transcript-input"
               />
               <Button
                 onClick={handleSend}
