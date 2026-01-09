@@ -70,6 +70,7 @@ const VoiceDiagnosticsPage = () => {
     try {
       setStatus("Connecting...");
       const loginRes = await fetch(`${API_URL}/api/auth/login`, {
+        signal,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Technician", email: "tech@alexis.local" })
