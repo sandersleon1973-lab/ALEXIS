@@ -501,7 +501,7 @@ const WiringUploadPage = () => {
           </div>
 
           {/* Conversation Area */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4" data-testid="conversation-log">
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4" data-testid="wiring-upload-conversation">
             {conversation.map((entry, idx) => (
               <div key={idx} className={`rounded-lg p-3 ${
                 entry.role === "technician" 
