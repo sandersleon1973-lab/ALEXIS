@@ -491,7 +491,7 @@ const VisualDiagnosticsPage = () => {
               </Button>
             </div>
             <p className="text-[10px] text-slate-500 mt-2">
-              Ask ALEXIS to identify components, check installation, or spot anomalies in what you're showing.
+              Ask ALEXIS to identify components, check installation, or spot anomalies in what you’re showing.
             </p>
           </div>
         </div>
