@@ -141,6 +141,7 @@ const VoiceDiagnosticsPage = () => {
     } catch (err) {
       console.error("Session init error:", err);
       setStatus("Connection Failed");
+      setInitState("ERROR");
       setSttError(err?.message || "Connection failed. Please refresh and try again.");
       // Allow retry on next mount
       voiceSessionInitPromise = null;
