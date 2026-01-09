@@ -534,7 +534,7 @@ const WiringUploadPage = () => {
                 onClick={handleSend}
                 disabled={isProcessing || !technicianTranscript.trim() || !sessionId}
                 className="h-12 px-6 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold uppercase tracking-wider text-xs disabled:opacity-40"
-                data-testid="send-button"
+                data-testid="wiring-upload-send-button"
               >
                 {isProcessing ? '...' : 'Send'}
               </Button>
