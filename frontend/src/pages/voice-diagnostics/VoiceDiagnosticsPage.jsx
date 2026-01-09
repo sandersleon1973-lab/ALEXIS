@@ -327,7 +327,7 @@ const VoiceDiagnosticsPage = () => {
         </div>
 
         {/* Conversation area */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4" data-testid="voice-diagnostics-conversation">
           {conversation.map((entry, idx) => (
             <div key={idx} className={`rounded-lg p-4 ${
               entry.role === "technician" 
