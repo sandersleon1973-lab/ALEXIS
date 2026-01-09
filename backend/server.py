@@ -798,8 +798,8 @@ async def text_to_speech(request: TTSRequest):
     logger.info(f"TTS REQUEST: session_id={request.session_id}, text='{request.text[:100]}...'")
     
     if not AZURE_SPEECH_KEY:
-        logger.warning("TTS: AZURE_SPEECH_KEY not configured, returning fallback")
-        raise HTTPException(status_code=503, detail="TTS not configured - use browser speech synthesis")
+        # Return 200 so frontend doesn't log as a failed request; browser TTS will be used.
+        return Response(content=b"", media_type="audio/mpeg")
     
     try:
         import requests as http_requests
