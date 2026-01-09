@@ -378,6 +378,7 @@ const VoiceDiagnosticsPage = () => {
                 <Button
                   variant="outline"
                   onClick={handleClear}
+                  data-testid="voice-diagnostics-clear-button"
                   className="h-8 px-3 rounded-full border-slate-700 bg-slate-950/90 text-xs text-slate-300"
                 >
                   Clear
