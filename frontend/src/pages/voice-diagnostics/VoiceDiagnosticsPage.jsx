@@ -8,6 +8,11 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 // Context for this page - SYMPTOM-BASED AUDIO DIAGNOSTICS
 const PAGE_CONTEXT = "symptom_audio_diagnostics";
 
+// Phase One: single-init session across React 18 StrictMode remounts
+let voiceSessionInitPromise = null;
+let voiceCachedSessionId = null;
+let voiceGreetingSent = false;
+
 const VoiceDiagnosticsPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [technicianTranscript, setTechnicianTranscript] = useState("");
@@ -23,10 +28,8 @@ const VoiceDiagnosticsPage = () => {
   const audioChunksRef = useRef([]);
   const conversationEndRef = useRef(null);
 
-  // Lockdown guards (React 18 StrictMode runs effects twice in dev)
-  const initOnceRef = useRef(false);
+  // Lockdown guards (component-local)
   const greetedRef = useRef(false);
-  const initAbortRef = useRef(null);
 
 
   // Pre-load browser voices
@@ -41,18 +44,10 @@ const VoiceDiagnosticsPage = () => {
     conversationEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation]);
 
-  // Initialize session and arm microphone (single-init)
+  // Initialize session and arm microphone (single-init, StrictMode-safe)
   useEffect(() => {
-    if (initOnceRef.current) return;
-    initOnceRef.current = true;
-
-    const abort = new AbortController();
-    initAbortRef.current = abort;
-
-    initSession(abort.signal);
+    initSession();
     armMicrophone();
-
-    return () => abort.abort();
   }, []);
 
   const armMicrophone = async () => {
@@ -73,7 +68,7 @@ const VoiceDiagnosticsPage = () => {
     }
   };
 
-  const initSession = async (signal) => {
+  const initSession = async () => {
     try {
       setStatus("Connecting...");
       const loginRes = await fetch(`${API_URL}/api/auth/login`, {
