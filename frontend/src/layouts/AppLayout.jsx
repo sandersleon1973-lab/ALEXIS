@@ -79,7 +79,7 @@ const AppLayout = () => {
         {/* Main content */}
         <main className="flex-1 relative bg-gradient-to-b from-slate-900/70 via-slate-950/80 to-black/95 px-10 pt-6 pb-8 flex flex-col min-h-0">
           {/* Top header brand band */}
-          <div className="absolute top-[-12px] left-10 flex items-center h-[90px] z-10">
+          <div className="absolute top-[-12px] left-10 flex items-center h-[90px] z-10" style={{ transform: "translateY(0px)" }}>
             <img
               src="https://customer-assets.emergentagent.com/job_zipcheck-agent/artifacts/430tb5p5_ChatGPT%20Image%20Jan%2010%2C%202026%2C%2012_42_08%20AM.png"
               alt="SA Diagnostic Solutions logo"
