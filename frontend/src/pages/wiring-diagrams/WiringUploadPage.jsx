@@ -3,13 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Mic, MicOff, Volume2, ZoomIn, ZoomOut, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
 import { Document, Page, pdfjs } from "react-pdf";
-import workerSrc from "pdfjs-dist/legacy/build/pdf.worker.min.mjs";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 
 // Worker path (Emergent / CRA-safe)
-// Use bundled worker import (ESM) to avoid runtime worker resolution failures.
-pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
+// Served from /public to avoid module resolution issues.
+pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.mjs`;
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
