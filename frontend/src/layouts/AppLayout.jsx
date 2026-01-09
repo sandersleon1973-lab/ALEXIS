@@ -45,7 +45,7 @@ const AppLayout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 pt-6 pb-4 space-y-1 overflow-y-auto custom-scrollbars">
+          <nav className="flex-1 px-4 pt-6 pb-4 space-y-1 overflow-y-auto custom-scrollbars" data-testid="sidebar-nav">
             {navItems.map(({ to, label, icon: Icon, exact }) => (
               <NavLink
                 key={to}
