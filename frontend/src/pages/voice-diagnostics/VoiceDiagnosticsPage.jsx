@@ -252,6 +252,7 @@ const VoiceDiagnosticsPage = () => {
     setConversation(prev => [...prev, techMessage]);
 
     try {
+      setInitState("ANALYZING");
       setStatus("ALEXIS is analyzing symptoms...");
       
       const chatRes = await fetch(`${API_URL}/api/diagnostic/chat`, {
