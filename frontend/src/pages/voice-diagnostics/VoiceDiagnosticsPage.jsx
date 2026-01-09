@@ -121,6 +121,7 @@ const VoiceDiagnosticsPage = () => {
         voiceCachedSessionId = sessionData.session_id;
         setSessionId(sessionData.session_id);
         setStatus("LIVE - Symptom Diagnostics");
+        setInitState("LIVE");
 
         // Initial ALEXIS greeting (single-shot across StrictMode remounts)
         if (!voiceGreetingSent && !greetedRef.current) {
