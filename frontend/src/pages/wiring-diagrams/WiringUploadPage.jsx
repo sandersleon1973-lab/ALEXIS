@@ -452,7 +452,15 @@ const WiringUploadPage = () => {
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center text-slate-500">
-                <div className="text-6xl mb-4 opacity-30">📄</div>
+                <div className="mx-auto mb-4 h-16 w-16 rounded-2xl border border-slate-800 bg-slate-900/40 flex items-center justify-center">
+                  <span className="sr-only">PDF</span>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-60">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M14 2v6h6" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M8 13h8" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M8 17h6" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                </div>
                 <p className="text-sm">Select a wiring diagram PDF to view</p>
                 <p className="text-xs text-slate-600 mt-2">ALEXIS will help you understand the schematic</p>
               </div>
