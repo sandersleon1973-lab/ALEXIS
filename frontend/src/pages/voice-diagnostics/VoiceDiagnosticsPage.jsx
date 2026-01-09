@@ -190,6 +190,7 @@ const VoiceDiagnosticsPage = () => {
       }
       setMicReady(false);
       setStatus("LIVE - Symptom Diagnostics");
+      setInitState("LIVE");
     }
   };
 
