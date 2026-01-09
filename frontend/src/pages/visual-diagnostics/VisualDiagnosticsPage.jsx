@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Mic, MicOff, Volume2, AlertCircle, Camera, CameraOff } from "lucide-react";
+import { Mic, MicOff, Volume2, AlertCircle, Camera, CameraOff, Image as ImageIcon } from "lucide-react";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
