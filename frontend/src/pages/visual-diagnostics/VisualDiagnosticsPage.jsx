@@ -496,6 +496,7 @@ const VisualDiagnosticsPage = () => {
               <Button
                 onClick={handleSend}
                 disabled={isProcessing || !transcript.trim() || !sessionId}
+                data-testid="visual-diagnostics-send-button"
                 className="h-12 px-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold uppercase tracking-wider text-xs disabled:opacity-40"
               >
                 {isProcessing ? '...' : 'Ask'}
