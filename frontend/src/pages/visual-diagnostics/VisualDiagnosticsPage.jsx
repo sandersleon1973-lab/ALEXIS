@@ -450,6 +450,7 @@ const VisualDiagnosticsPage = () => {
               variant="outline"
               onClick={toggleMic}
               disabled={isProcessing || !sessionId}
+              data-testid="visual-diagnostics-mic-button"
               className={`h-12 w-12 rounded-full p-0 ${
                 isRecording 
                   ? 'bg-red-600 border-red-500 text-white animate-pulse' 
