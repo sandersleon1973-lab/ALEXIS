@@ -51,6 +51,7 @@ const AppLayout = () => {
                 key={to}
                 to={to}
                 end={exact}
+                data-testid={`sidebar-navlink-${label.toLowerCase().replace(/\s+/g, "-")}`}
                 className={({ isActive }) =>
                   [
                     "group flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm tracking-wide",
