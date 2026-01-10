@@ -305,14 +305,6 @@ const WiringUploadPage = () => {
     }
   };
 
-  // PDF handlers
-  const handleFileChange = (event) => {
-    if (trainingMode) return;
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setPdfError(null);
-    setSelectedFile(file);
-
   const loadTrainingScenario = (scenario) => {
     setTrainingScenario(scenario);
     setTrainingMode(true);
@@ -321,14 +313,17 @@ const WiringUploadPage = () => {
     setCurrentPage(1);
 
     // Load PDF immediately into viewer
-    try {
-      setSelectedFile(`${process.env.PUBLIC_URL}${scenario.diagram_url}`);
-      setStatus("TRAINING MODE");
-    } catch {
-      // noop
-    }
+    setSelectedFile(`${process.env.PUBLIC_URL}${scenario.diagram_url}`);
+    setStatus("TRAINING MODE");
   };
 
+  // PDF handlers
+  const handleFileChange = (event) => {
+    if (trainingMode) return;
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setPdfError(null);
+    setSelectedFile(file);
     setNumPages(null);
     setCurrentPage(1);
     setScale(1.0);
