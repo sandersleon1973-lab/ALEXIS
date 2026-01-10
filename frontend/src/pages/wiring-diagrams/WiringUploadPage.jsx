@@ -220,6 +220,8 @@ const WiringUploadPage = () => {
       TPS: { ...base, x: 340, y: 320 },
     };
     return map[pid] || base;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   };
 
   useEffect(() => {
