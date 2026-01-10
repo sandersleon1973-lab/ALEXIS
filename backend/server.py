@@ -58,6 +58,70 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ===================== ALEXIS DIAGNOSTIC STANDARD SYSTEM PROMPT =====================
+
+# ===================== TRAINING SCENARIO (MINIMAL) =====================
+TRAINING_NO_START = {
+    "id": "no_start_v1",
+    "title": "Crank–No-Start (Training)",
+    "diagram_url": "/training_no_start_3pages.pdf",
+    "steps": [
+        {
+            "mode": "teach",
+            "say": "Training mode. Scenario: crank–no-start. We will not guess. We will verify step by step.",
+            "commands": [{"command": "GOTO_PAGE", "page": 1}],
+        },
+        {
+            "mode": "teach",
+            "say": "Step 1: confirm battery voltage and ignition feed. This is where voltage should be present with key ON.",
+            "commands": [
+                {"command": "SHOW_ON_DIAGRAM", "page": 1, "bounds": {"x": 150, "y": 220, "width": 220, "height": 120}},
+                {"command": "CLEAR_DIAGRAM"},
+            ],
+            "checkpoint": {
+                "question": "What value do you expect at the battery feed with key ON?",
+                "expected_keywords": ["12", "12.2", "volts", "v"],
+                "correct_hint": "Correct — you expect approximately battery voltage (around 12V KOEO).",
+                "incorrect_hint": "Not quite — you should expect approximately battery voltage (around 12V KOEO).",
+            },
+        },
+        {
+            "mode": "teach",
+            "say": "Step 2: verify the fuel pump command path. We follow the control side before replacing parts.",
+            "commands": [
+                {"command": "GOTO_PAGE", "page": 2},
+                {"command": "SHOW_ON_DIAGRAM", "page": 2, "bounds": {"x": 150, "y": 220, "width": 220, "height": 120}},
+                {"command": "CLEAR_DIAGRAM"},
+            ],
+            "checkpoint": {
+                "question": "If the pump does not prime, what do you test first: power feed or control command?",
+                "expected_keywords": ["power", "feed"],
+                "correct_hint": "Correct — verify power feed first, then command, then ground. One measurement at a time.",
+                "incorrect_hint": "I would start by verifying the power feed first, then command, then ground — one measurement at a time.",
+            },
+        },
+        {
+            "mode": "teach",
+            "say": "Step 3: confirm injector pulse. If there is no injector pulse, we move upstream to crank signal and ECU enable.",
+            "commands": [
+                {"command": "GOTO_PAGE", "page": 3},
+                {"command": "SHOW_ON_DIAGRAM", "page": 3, "bounds": {"x": 150, "y": 220, "width": 220, "height": 120}},
+                {"command": "CLEAR_DIAGRAM"},
+            ],
+            "checkpoint": {
+                "question": "What tool can you use quickly to confirm injector pulse?",
+                "expected_keywords": ["noid", "light", "scope", "oscilloscope"],
+                "correct_hint": "Correct — a noid light or scope is a fast way to confirm injector pulse.",
+                "incorrect_hint": "A noid light or a scope is a fast way to confirm injector pulse.",
+            },
+        },
+        {
+            "mode": "end",
+            "say": "Training replay complete. You followed a verification-first path without guessing.",
+            "commands": [{"command": "CLEAR_DIAGRAM"}],
+        },
+    ],
+}
+
 ALEXIS_SYSTEM_PROMPT = """
 You are ALEXIS (Autonomous Logical Expert for eXpert Inspection Systems), a professional automotive diagnostic reasoning assistant developed by SA Diagnostic Solutions. You operate exclusively in LIVE READ-ONLY mode.
 
