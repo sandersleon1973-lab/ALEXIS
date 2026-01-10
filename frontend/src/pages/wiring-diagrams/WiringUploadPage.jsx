@@ -307,6 +307,7 @@ const WiringUploadPage = () => {
 
   // PDF handlers
   const handleFileChange = (event) => {
+    if (trainingMode) return;
     const file = event.target.files?.[0];
     if (!file) return;
     setPdfError(null);
