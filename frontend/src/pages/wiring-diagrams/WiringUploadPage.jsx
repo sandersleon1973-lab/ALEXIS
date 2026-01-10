@@ -338,6 +338,73 @@ const WiringUploadPage = () => {
       }
       browserSpeak(cleanText);
     } catch {
+
+  const extractAlexisCommands = (text) => {
+    const match = text.match(/<ALEXIS_COMMANDS>([\s\S]*?)<\/ALEXIS_COMMANDS>/);
+    if (!match) return null;
+    try {
+      return JSON.parse(match[1]);
+    } catch {
+      return null;
+    }
+  };
+
+  const dispatchDiagramCommand = (cmd) => {
+    if (!cmd || !cmd.command) return;
+    window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: cmd }));
+  };
+
+  const speakResponseWithPromise = (text) => {
+    return new Promise((resolve) => {
+      const cleanText = (text || "").replace(/\*\*/g, "").replace(/\*/g, "").replace(/#/g, "");
+      try {
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.1;
+        utterance.onend = () => resolve();
+        utterance.onerror = () => resolve();
+        window.speechSynthesis.speak(utterance);
+      } catch {
+        resolve();
+      }
+    });
+  };
+
+  const runTraceCommands = async (commandsPayload) => {
+    if (!commandsPayload?.commands || !Array.isArray(commandsPayload.commands)) return;
+    if (traceRunnerRef.current.running) return;
+
+    traceRunnerRef.current.running = true;
+    traceRunnerRef.current.cancel = false;
+
+    try {
+      for (const cmd of commandsPayload.commands) {
+        if (traceRunnerRef.current.cancel) break;
+
+        if (cmd.command === "GOTO_PAGE") {
+          dispatchDiagramCommand(cmd);
+          // allow react-pdf to render the new page
+          await new Promise((r) => setTimeout(r, 900));
+          continue;
+        }
+
+        if (cmd.command === "SHOW_ON_DIAGRAM") {
+          dispatchDiagramCommand(cmd);
+          // narration for this step is provided in the text after commands; we keep it minimal here
+          await new Promise((r) => setTimeout(r, 250));
+          continue;
+        }
+
+        if (cmd.command === "CLEAR_DIAGRAM") {
+          dispatchDiagramCommand(cmd);
+          await new Promise((r) => setTimeout(r, 180));
+        }
+      }
+    } finally {
+      traceRunnerRef.current.running = false;
+    }
+  };
+
       browserSpeak(cleanText);
     }
   };
