@@ -36,6 +36,7 @@ const WiringUploadPage = () => {
   const audioChunksRef = useRef([]);
   const audioRef = useRef(null);
   const conversationEndRef = useRef(null);
+  const teachingRef = useRef(null);
 
   // Pre-load browser voices for ALEXIS female voice selection
   useEffect(() => {
