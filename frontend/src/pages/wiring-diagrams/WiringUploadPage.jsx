@@ -323,6 +323,7 @@ const WiringUploadPage = () => {
   // Send to ALEXIS with DIAGRAM ASSISTANCE context
   const sendToAlexis = async (text) => {
     if (!text.trim() || !sessionId) return;
+    const isTraceRequest = text.includes("TRACE_MODE=ON") || traceMode;
     setIsProcessing(true);
     setSttError(null);
 
@@ -345,21 +346,21 @@ const WiringUploadPage = () => {
       if (!chatRes.ok) throw new Error("Chat failed");
       const chatData = await chatRes.json();
 
-      const alexisMessage = { role: "alexis", text: chatData.response };
-      setConversation(prev => [...prev, alexisMessage]);
+      const commandsPayload = extractAlexisCommands(chatData.response);
+      const cleanedResponse = chatData.response.replace(/<ALEXIS_COMMANDS>[\s\S]*?<\/ALEXIS_COMMANDS>/, "").trim();
+
+      const alexisMessage = { role: "alexis", text: cleanedResponse || chatData.response };
+      setConversation((prev) => [...prev, alexisMessage]);
       setTechnicianTranscript("");
 
-      const commandsPayload = extractAlexisCommands(chatData.response);
-      if (traceMode && commandsPayload?.commands?.length) {
+      if (isTraceRequest && commandsPayload?.commands?.length) {
         setStatus("TRACE MODE...");
-        // Execute overlay commands; narration is already in the response text
-        runTraceCommands(commandsPayload);
-        // No TTS here; trace narration should be read by technician or can be upgraded later
+        runTraceCommands(commandsPayload, cleanedResponse);
         setStatus("LIVE - Diagram Assistance");
       } else {
         setStatus("ALEXIS is speaking...");
         // Speak asynchronously so UI updates (chat bubble render) are not blocked
-        speakResponse(chatData.response);
+        speakResponse(cleanedResponse || chatData.response);
       }
     } catch (err) {
       console.error("Chat error:", err);
