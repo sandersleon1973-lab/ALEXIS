@@ -280,6 +280,18 @@ const WiringUploadPage = () => {
   };
 
   const dispatchDiagramCommand = (cmd) => {
+
+  const extractTraceStepNarration = (narrationText) => {
+    // Expect numbered lines like: 1) ... 2) ...
+    const lines = (narrationText || "").split(/\n+/).map((l) => l.trim()).filter(Boolean);
+    const steps = [];
+    for (const l of lines) {
+      const m = l.match(/^\d+[\)|\.]\s+(.*)$/);
+      if (m && m[1]) steps.push(m[1].trim());
+    }
+    return steps;
+  };
+
     if (!cmd || !cmd.command) return;
     window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: cmd }));
   };
