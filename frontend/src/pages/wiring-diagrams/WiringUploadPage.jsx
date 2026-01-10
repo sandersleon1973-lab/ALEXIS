@@ -261,7 +261,7 @@ const WiringUploadPage = () => {
 
     const id = setInterval(tick, 650);
     return () => clearInterval(id);
-  }, [liveMode, currentPage]);
+  }, [liveMode, currentPage, pidToTestPoint]);
 
   const initSession = async () => {
     try {
