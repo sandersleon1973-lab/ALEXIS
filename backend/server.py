@@ -921,6 +921,27 @@ async def get_training_scenario(scenario_id: str):
         raise HTTPException(status_code=500, detail=f"Chat failed: {str(e)}")
 
 # ===================== TTS ENDPOINT =====================
+
+# ===================== TRAINING API (MINIMAL) =====================
+@api_router.get("/training/scenarios")
+async def list_training_scenarios():
+    return {
+        "scenarios": [
+            {
+                "id": TRAINING_NO_START["id"],
+                "title": TRAINING_NO_START["title"],
+                "diagram_url": TRAINING_NO_START["diagram_url"],
+            }
+        ]
+    }
+
+
+@api_router.get("/training/scenarios/{scenario_id}")
+async def get_training_scenario(scenario_id: str):
+    if scenario_id != TRAINING_NO_START["id"]:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+    return TRAINING_NO_START
+
 @api_router.post("/tts")
 async def text_to_speech(request: TTSRequest):
     """
