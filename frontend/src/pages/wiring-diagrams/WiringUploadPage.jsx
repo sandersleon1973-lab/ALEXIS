@@ -33,6 +33,8 @@ const WiringUploadPage = () => {
   const [micReady, setMicReady] = useState(false);
   const [traceMode, setTraceMode] = useState(false);
   const traceRunnerRef = useRef({ running: false, cancel: false });
+  const [diagnoseMode, setDiagnoseMode] = useState(false);
+
 
 
   const mediaRecorderRef = useRef(null);
