@@ -35,6 +35,19 @@ EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 app = FastAPI()
 
 # Create a router with the /api prefix
+
+# ===================== LIVE DATA (SIMULATED) =====================
+LIVE_PIDS = [
+    {"pid": "RPM", "unit": "rpm"},
+    {"pid": "BATTERY_VOLTAGE", "unit": "V"},
+    {"pid": "IGNITION_STATUS", "unit": ""},
+    {"pid": "INJECTOR_PULSE", "unit": "ms"},
+    {"pid": "FUEL_RAIL_PRESSURE", "unit": "bar"},
+    {"pid": "MAF", "unit": "g/s"},
+    {"pid": "ECT", "unit": "°C"},
+    {"pid": "TPS", "unit": "%"},
+]
+
 api_router = APIRouter(prefix="/api")
 
 # Configure logging
