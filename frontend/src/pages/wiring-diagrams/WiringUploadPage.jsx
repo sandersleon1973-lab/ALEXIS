@@ -112,6 +112,15 @@ const WiringUploadPage = () => {
 
   // Arm microphone - request permission immediately
   const armMicrophone = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((t) => t.stop());
+      setMicReady(true);
+    } catch (err) {
+      setMicReady(false);
+      setSttError("Microphone access denied. Please allow microphone permission.");
+    }
+  };
 
   // ===================== LIVE DATA MODE (SIMULATED via WS) =====================
   const connectLiveStream = () => {
