@@ -222,7 +222,7 @@ const WiringUploadPage = () => {
     return map[pid] || base;
   // (deps intentionally stable)
 
-  };
+  }, [currentPage]);
 
   useEffect(() => {
     if (!liveMode) return;
