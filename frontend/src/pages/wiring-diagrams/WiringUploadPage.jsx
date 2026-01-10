@@ -451,7 +451,29 @@ const WiringUploadPage = () => {
   };
 
   const handleSend = () => {
-    if (technicianTranscript.trim()) sendToAlexis(technicianTranscript);
+    const input = technicianTranscript.trim();
+    if (!input) return;
+
+    const lower = input.toLowerCase();
+
+    // Trace mode activation (user-triggered only)
+    if (lower.includes("trace this") || lower.includes("show current flow")) {
+      setTraceMode(true);
+      sendToAlexis(`TRACE_MODE=ON. ${input}`);
+      return;
+    }
+
+    // Stop trace
+    if (lower === "stop" || lower.includes("stop trace")) {
+      setTraceMode(false);
+      traceRunnerRef.current.cancel = true;
+      window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
+      setTechnicianTranscript("");
+      return;
+    }
+
+    // Default explain
+    sendToAlexis(input);
   };
 
   return (
