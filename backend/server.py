@@ -923,6 +923,11 @@ async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
     status_obj = StatusCheck(**status_dict)
 
+    doc = status_obj.model_dump()
+    doc["timestamp"] = doc["timestamp"].isoformat()
+    _ = await db.status_checks.insert_one(doc)
+    return status_obj
+
 # ===================== LIVE DATA WEBSOCKET (SIMULATED) =====================
 @api_router.websocket("/live/ws")
 async def live_ws(websocket: WebSocket):
