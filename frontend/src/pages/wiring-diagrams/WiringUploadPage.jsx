@@ -284,7 +284,7 @@ const WiringUploadPage = () => {
     window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: cmd }));
   };
 
-  const runTraceCommands = async (commandsPayload) => {
+  const runTraceCommands = async (commandsPayload, narrationText) => {
     if (!commandsPayload?.commands || !Array.isArray(commandsPayload.commands)) return;
     if (traceRunnerRef.current.running) return;
 
