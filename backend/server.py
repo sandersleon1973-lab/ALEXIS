@@ -858,6 +858,23 @@ async def diagnostic_chat(request: ChatRequest):
         # Initialize LlmChat with GPT-4.1
         chat = LlmChat(
             api_key=EMERGENT_LLM_KEY,
+
+# ===================== TRAINING API (MINIMAL) =====================
+@api_router.get("/training/scenarios")
+async def list_training_scenarios():
+    return {
+        "scenarios": [
+            {"id": TRAINING_NO_START["id"], "title": TRAINING_NO_START["title"], "diagram_url": TRAINING_NO_START["diagram_url"]}
+        ]
+    }
+
+
+@api_router.get("/training/scenarios/{scenario_id}")
+async def get_training_scenario(scenario_id: str):
+    if scenario_id != TRAINING_NO_START["id"]:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+    return TRAINING_NO_START
+
             session_id=request.session_id,
             system_message=full_system_prompt,
             initial_messages=initial_messages if initial_messages else None
