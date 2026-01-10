@@ -507,7 +507,31 @@ const WiringUploadPage = () => {
     // Trace mode activation (user-triggered only)
     if (lower.includes("trace this") || lower.includes("show current flow")) {
       setTraceMode(true);
+      setDiagnoseMode(false);
       sendToAlexis(`TRACE_MODE=ON. ${input}`);
+      return;
+    }
+
+    // Diagnosis mode activation (strict entry: requires dtc or symptom text)
+    if (lower.includes("diagnose") || lower.includes("fault isolation") || lower.includes("test plan")) {
+      const hasDtc = /\bp0\d{3}\b/i.test(input) || /\bu0\d{3}\b/i.test(input) || /\bc0\d{3}\b/i.test(input);
+      const hasSymptom = /(no start|crank|stall|misfire|no fuel|no spark|rough idle|overheat|no power|limp mode|won't start)/i.test(input);
+
+      if (!hasDtc && !hasSymptom) {
+        setConversation((prev) => [
+          ...prev,
+          {
+            role: "alexis",
+            text: "Diagnosis mode requires evidence (a DTC code or a symptom description). Tell me the DTC(s) or the exact symptom and I’ll build a test plan."
+          }
+        ]);
+        setTechnicianTranscript("");
+        return;
+      }
+
+      setDiagnoseMode(true);
+      setTraceMode(false);
+      sendToAlexis(`DIAGNOSE_MODE=ON. Evidence: ${input}`);
       return;
     }
 
