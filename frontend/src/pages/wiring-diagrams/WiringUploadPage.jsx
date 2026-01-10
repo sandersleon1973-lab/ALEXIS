@@ -112,6 +112,143 @@ const WiringUploadPage = () => {
 
   // Arm microphone - request permission immediately
   const armMicrophone = async () => {
+
+  // ===================== LIVE DATA MODE (SIMULATED via WS) =====================
+  const connectLiveStream = () => {
+    if (liveWsRef.current) return;
+
+    try {
+      const wsUrl = `${API_URL.replace(/^http/, "ws")}/api/live/ws`;
+      const ws = new WebSocket(wsUrl);
+      liveWsRef.current = ws;
+
+      ws.onopen = () => {
+        setLiveMode(true);
+        setConversation((prev) => [
+          ...prev,
+          { role: "alexis", text: "LIVE DATA MODE: connected (simulated). I’ll evaluate one signal at a time." },
+        ]);
+      };
+
+      ws.onmessage = (evt) => {
+        try {
+          const msg = JSON.parse(evt.data);
+          // Enqueue one PID at a time
+          liveQueueRef.current.push(msg);
+        } catch {
+          // ignore
+        }
+      };
+
+      ws.onclose = () => {
+        liveWsRef.current = null;
+        setLiveMode(false);
+      };
+
+      ws.onerror = () => {
+        liveWsRef.current = null;
+        setLiveMode(false);
+        setConversation((prev) => [
+          ...prev,
+          { role: "alexis", text: "LIVE DATA MODE unavailable. Falling back to Diagnosis Bridge." },
+        ]);
+      };
+    } catch {
+      setConversation((prev) => [
+        ...prev,
+        { role: "alexis", text: "LIVE DATA MODE unavailable. Falling back to Diagnosis Bridge." },
+      ]);
+    }
+  };
+
+  const disconnectLiveStream = () => {
+    try {
+      if (liveWsRef.current) liveWsRef.current.close();
+    } catch {
+      // ignore
+    }
+    liveWsRef.current = null;
+    setLiveMode(false);
+  };
+
+  const pidToExpected = (pid, value) => {
+    // Minimal expectations for demo (technician-first, non-diagnostic)
+    switch (pid) {
+      case "BATTERY_VOLTAGE":
+        return { expected: ">= 12.2 V KOEO", interpretation: value >= 12.2 ? "pass" : "low" };
+      case "RPM":
+        return { expected: "~650–850 rpm at warm idle", interpretation: value >= 500 ? "pass" : "low" };
+      case "IGNITION_STATUS":
+        return { expected: "ON during testing", interpretation: value === "ON" ? "pass" : "off" };
+      case "FUEL_RAIL_PRESSURE":
+        return { expected: "varies by system; should be stable for the operating mode", interpretation: "inconclusive" };
+      case "INJECTOR_PULSE":
+        return { expected: ">0 ms when commanding fuel", interpretation: value > 0 ? "pass" : "no_pulse" };
+      case "MAF":
+        return { expected: "~2–7 g/s idle (engine-dependent)", interpretation: "inconclusive" };
+      case "ECT":
+        return { expected: "~70–105 °C warmed up", interpretation: "inconclusive" };
+      case "TPS":
+        return { expected: "~0–10% at closed throttle", interpretation: "inconclusive" };
+      default:
+        return { expected: "—", interpretation: "inconclusive" };
+    }
+  };
+
+  const pidToTestPoint = (pid) => {
+    // SCREEN/DOM pixel demo mapping (center of page) – can be calibrated later
+    // One test point at a time.
+    const base = { x: 220, y: 220, width: 180, height: 90, page: currentPage };
+    const map = {
+      BATTERY_VOLTAGE: { ...base, x: 180, y: 160 },
+      RPM: { ...base, x: 260, y: 240 },
+      IGNITION_STATUS: { ...base, x: 210, y: 200 },
+      INJECTOR_PULSE: { ...base, x: 320, y: 260 },
+      FUEL_RAIL_PRESSURE: { ...base, x: 360, y: 210 },
+      MAF: { ...base, x: 280, y: 300 },
+      ECT: { ...base, x: 200, y: 320 },
+      TPS: { ...base, x: 340, y: 320 },
+    };
+    return map[pid] || base;
+  };
+
+  useEffect(() => {
+    if (!liveMode) return;
+
+    const tick = async () => {
+      if (liveProcessingRef.current) return;
+      if (!liveQueueRef.current.length) return;
+
+      liveProcessingRef.current = true;
+      try {
+        const update = liveQueueRef.current.shift();
+        const { pid, value, unit, timestamp } = update || {};
+        if (!pid) return;
+
+        const expectedInfo = pidToExpected(pid, value);
+        const bounds = pidToTestPoint(pid);
+
+        // Highlight one related test point
+        window.dispatchEvent(
+          new CustomEvent("ALEXIS_DIAGRAM_COMMAND", {
+            detail: { command: "SHOW_ON_DIAGRAM", page: bounds.page, bounds },
+          })
+        );
+
+        const msg = `LIVE DATA (${pid})\nExpected: ${expectedInfo.expected}\nActual: ${value}${unit ? " " + unit : ""}\nResult: ${expectedInfo.interpretation.toUpperCase()}\nTimestamp: ${timestamp}`;
+        setConversation((prev) => [...prev, { role: "alexis", text: msg }]);
+        await speakResponseWithPromise(`Live data ${pid}. Expected ${expectedInfo.expected}. Actual ${value} ${unit || ""}. Result ${expectedInfo.interpretation}.`);
+
+        window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
+      } finally {
+        liveProcessingRef.current = false;
+      }
+    };
+
+    const id = setInterval(tick, 650);
+    return () => clearInterval(id);
+  }, [liveMode, currentPage]);
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach(t => t.stop()); // Release immediately, just checking permission
