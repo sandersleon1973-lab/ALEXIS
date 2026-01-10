@@ -269,6 +269,57 @@ const WiringUploadPage = () => {
     }
   };
 
+  const extractAlexisCommands = (text) => {
+    const match = text.match(/<ALEXIS_COMMANDS>([\s\S]*?)<\/ALEXIS_COMMANDS>/);
+    if (!match) return null;
+    try {
+      return JSON.parse(match[1]);
+    } catch {
+      return null;
+    }
+  };
+
+  const dispatchDiagramCommand = (cmd) => {
+    if (!cmd || !cmd.command) return;
+    window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: cmd }));
+  };
+
+  const runTraceCommands = async (commandsPayload) => {
+    if (!commandsPayload?.commands || !Array.isArray(commandsPayload.commands)) return;
+    if (traceRunnerRef.current.running) return;
+
+    traceRunnerRef.current.running = true;
+    traceRunnerRef.current.cancel = false;
+
+    try {
+      for (const cmd of commandsPayload.commands) {
+        if (traceRunnerRef.current.cancel) break;
+
+        if (cmd.command === "GOTO_PAGE") {
+          dispatchDiagramCommand(cmd);
+          await new Promise((r) => setTimeout(r, 900));
+          continue;
+        }
+
+        if (cmd.command === "SHOW_ON_DIAGRAM") {
+          dispatchDiagramCommand(cmd);
+          await new Promise((r) => setTimeout(r, 1200));
+          // one step = one glow, then clear
+          dispatchDiagramCommand({ command: "CLEAR_DIAGRAM" });
+          await new Promise((r) => setTimeout(r, 180));
+          continue;
+        }
+
+        if (cmd.command === "CLEAR_DIAGRAM") {
+          dispatchDiagramCommand(cmd);
+          await new Promise((r) => setTimeout(r, 180));
+        }
+      }
+    } finally {
+      traceRunnerRef.current.running = false;
+    }
+  };
+
   // Send to ALEXIS with DIAGRAM ASSISTANCE context
   const sendToAlexis = async (text) => {
     if (!text.trim() || !sessionId) return;
