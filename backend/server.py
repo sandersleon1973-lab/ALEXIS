@@ -922,6 +922,68 @@ async def root():
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
     status_obj = StatusCheck(**status_dict)
+
+# ===================== LIVE DATA WEBSOCKET (SIMULATED) =====================
+@api_router.websocket("/live/ws")
+async def live_ws(websocket: WebSocket):
+    await websocket.accept()
+
+    import asyncio
+    from random import random
+
+    ignition_on = True
+    t = 0
+
+    try:
+        while True:
+            now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+            # Simple deterministic-ish simulation
+            rpm = 0 if not ignition_on else int(700 + 80 * (random() - 0.5))
+            battery_v = round(11.8 + 0.6 * (random() - 0.5), 2)
+            injector_ms = 0.0 if rpm == 0 else round(2.2 + 0.8 * (random() - 0.5), 2)
+            frp = 0.0 if rpm == 0 else round(320 + 20 * (random() - 0.5), 1)
+            maf = 0.0 if rpm == 0 else round(3.5 + 0.8 * (random() - 0.5), 2)
+            ect = round(82 + 2 * (random() - 0.5), 1)
+            tps = 0.0 if rpm == 0 else round(2.5 + 1.0 * (random() - 0.5), 1)
+
+            updates = [
+                {"timestamp": now, "source": "simulated", "pid": "RPM", "value": rpm, "unit": "rpm", "status": "valid"},
+                {
+                    "timestamp": now,
+                    "source": "simulated",
+                    "pid": "BATTERY_VOLTAGE",
+                    "value": battery_v,
+                    "unit": "V",
+                    "status": "low" if battery_v < 12.0 else "valid",
+                },
+                {"timestamp": now, "source": "simulated", "pid": "IGNITION_STATUS", "value": "ON" if ignition_on else "OFF", "unit": "", "status": "valid"},
+                {"timestamp": now, "source": "simulated", "pid": "INJECTOR_PULSE", "value": injector_ms, "unit": "ms", "status": "valid"},
+                {"timestamp": now, "source": "simulated", "pid": "FUEL_RAIL_PRESSURE", "value": frp, "unit": "bar", "status": "valid"},
+                {"timestamp": now, "source": "simulated", "pid": "MAF", "value": maf, "unit": "g/s", "status": "valid"},
+                {"timestamp": now, "source": "simulated", "pid": "ECT", "value": ect, "unit": "°C", "status": "valid"},
+                {"timestamp": now, "source": "simulated", "pid": "TPS", "value": tps, "unit": "%", "status": "valid"},
+            ]
+
+            # Send ONE PID update at a time (Phase Five rule)
+            idx = t % len(updates)
+            await websocket.send_json(updates[idx])
+
+            t += 1
+            if t % 20 == 0:
+                ignition_on = not ignition_on
+
+            await asyncio.sleep(0.6)
+
+    except WebSocketDisconnect:
+        return
+    except Exception as e:
+        logger.error(f"live_ws error: {type(e).__name__}: {e}")
+        try:
+            await websocket.close()
+        except Exception:
+            pass
+
     doc = status_obj.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
     _ = await db.status_checks.insert_one(doc)
