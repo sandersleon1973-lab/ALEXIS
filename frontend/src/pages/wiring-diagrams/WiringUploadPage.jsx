@@ -295,16 +295,7 @@ const WiringUploadPage = () => {
     return steps;
   };
 
-  const runTraceCommands = async (commandsPayload, narrationText) => {
-    if (!commandsPayload?.commands || !Array.isArray(commandsPayload.commands)) return;
-    if (traceRunnerRef.current.running) return;
-
-    const stepNarration = extractTraceStepNarration(narrationText);
-    let stepIndex = 0;
-
-    traceRunnerRef.current.running = true;
-
-  const speakResponseWithPromise = async (text) => {
+  const speakResponseWithPromise = (text) => {
     setIsSpeaking(true);
     setStatus("TRACE MODE - Speaking...");
     const cleanText = (text || "").replace(/\*\*/g, "").replace(/\*/g, "").replace(/#/g, "");
@@ -330,6 +321,14 @@ const WiringUploadPage = () => {
     });
   };
 
+  const runTraceCommands = async (commandsPayload, narrationText) => {
+    if (!commandsPayload?.commands || !Array.isArray(commandsPayload.commands)) return;
+    if (traceRunnerRef.current.running) return;
+
+    const stepNarration = extractTraceStepNarration(narrationText);
+    let stepIndex = 0;
+
+    traceRunnerRef.current.running = true;
     traceRunnerRef.current.cancel = false;
 
     try {
