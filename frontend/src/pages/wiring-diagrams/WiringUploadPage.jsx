@@ -54,6 +54,45 @@ const WiringUploadPage = () => {
     conversationEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [conversation]);
 
+
+  // Diagram region selection (SCREEN/DOM pixels) -> immediate ALEXIS explain
+  const pageLayerRef = useRef(null);
+  const [selection, setSelection] = useState(null);
+
+  const handleDiagramMouseUp = (e) => {
+    if (!pageLayerRef.current || !selectedFile || !sessionId) return;
+
+    const rect = pageLayerRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const bounds = {
+      x: Math.max(0, Math.round(x - 80)),
+      y: Math.max(0, Math.round(y - 45)),
+      width: 160,
+      height: 90,
+      page: currentPage,
+    };
+
+    setSelection(bounds);
+
+    // Local highlight (pulse)
+    window.dispatchEvent(
+      new CustomEvent("ALEXIS_DIAGRAM_COMMAND", {
+        detail: {
+          command: "SHOW_ON_DIAGRAM",
+          page: currentPage,
+          bounds,
+        },
+      })
+    );
+
+    // Immediate explanation (EXPLAIN default)
+    sendToAlexis(
+      `Explain what is happening in the selected region. Page ${currentPage}. Bounds: x=${bounds.x}, y=${bounds.y}, w=${bounds.width}, h=${bounds.height}.`
+    );
+  };
+
   // Initialize session and arm microphone on mount
   useEffect(() => {
     initSession();
