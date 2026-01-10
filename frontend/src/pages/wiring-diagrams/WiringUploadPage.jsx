@@ -261,17 +261,6 @@ const WiringUploadPage = () => {
     return () => clearInterval(id);
   }, [liveMode, currentPage]);
 
-  const armMicrophone = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((t) => t.stop()); // Release immediately, just checking permission
-      setMicReady(true);
-    } catch (err) {
-      setMicReady(false);
-      setSttError("Microphone access denied. Please allow microphone permission.");
-    }
-  };
-
   const initSession = async () => {
     try {
       setStatus("Connecting...");
