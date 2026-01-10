@@ -41,6 +41,9 @@ const WiringUploadPage = () => {
   const [liveMode, setLiveMode] = useState(false);
   const liveWsRef = useRef(null);
   const liveQueueRef = useRef([]);
+  const [trainingMode, setTrainingMode] = useState(false);
+  const [trainingScenario, setTrainingScenario] = useState(null);
+
   const liveProcessingRef = useRef(false);
 
 
