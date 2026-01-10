@@ -829,6 +829,20 @@ const WiringUploadPage = () => {
 
           {/* PDF Display Area */}
           <div className="flex-1 overflow-auto bg-slate-950 p-4 relative" data-testid="wiring-upload-pdf-container">
+            {trainingMode && (
+              <div className="absolute left-4 top-4 z-50 w-[420px] max-w-[90%]">
+                <TrainingModePanel
+                  apiUrl={API_URL}
+                  onLoadScenario={loadTrainingScenario}
+                  onExit={() => {
+                    setTrainingMode(false);
+                    setTrainingScenario(null);
+                    setStatus("LIVE - Diagram Assistance");
+                    window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
+                  }}
+                />
+              </div>
+            )}
             {pdfError ? (
               <div className="h-full flex items-center justify-center text-red-400 text-sm">{pdfError}</div>
             ) : selectedFile ? (
