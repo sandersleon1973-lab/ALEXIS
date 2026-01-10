@@ -655,6 +655,13 @@ const WiringUploadPage = () => {
       return;
     }
 
+    // Live data mode (simulated) - strict entry: requires live stream connection
+    if (lower.includes("live data")) {
+      connectLiveStream();
+      setTechnicianTranscript("");
+      return;
+    }
+
     // Diagnosis mode activation (strict entry: requires dtc or symptom text)
     if (lower.includes("diagnose") || lower.includes("fault isolation") || lower.includes("test plan")) {
       const hasDtc = /\bp0\d{3}\b/i.test(input) || /\bu0\d{3}\b/i.test(input) || /\bc0\d{3}\b/i.test(input);
