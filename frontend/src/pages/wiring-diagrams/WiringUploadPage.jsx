@@ -223,7 +223,6 @@ const WiringUploadPage = () => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     if (!liveMode) return;
 
     const tick = async () => {
