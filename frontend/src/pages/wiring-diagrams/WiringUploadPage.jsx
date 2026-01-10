@@ -31,6 +31,9 @@ const WiringUploadPage = () => {
   const [status, setStatus] = useState("Initializing...");
   const [sttError, setSttError] = useState(null);
   const [micReady, setMicReady] = useState(false);
+  const [traceMode, setTraceMode] = useState(false);
+  const traceRunnerRef = useRef({ running: false, cancel: false });
+
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
