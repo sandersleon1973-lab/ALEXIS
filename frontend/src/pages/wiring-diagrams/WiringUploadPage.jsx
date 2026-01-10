@@ -304,6 +304,33 @@ const WiringUploadPage = () => {
     let stepIndex = 0;
 
     traceRunnerRef.current.running = true;
+
+  const speakResponseWithPromise = async (text) => {
+    setIsSpeaking(true);
+    setStatus("TRACE MODE - Speaking...");
+    const cleanText = (text || "").replace(/\*\*/g, "").replace(/\*/g, "").replace(/#/g, "");
+
+    return new Promise((resolve) => {
+      try {
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.rate = 0.95;
+        utterance.pitch = 1.1;
+        utterance.onend = () => {
+          setIsSpeaking(false);
+          resolve();
+        };
+        utterance.onerror = () => {
+          setIsSpeaking(false);
+          resolve();
+        };
+        window.speechSynthesis.speak(utterance);
+      } catch {
+        setIsSpeaking(false);
+        resolve();
+      }
+    });
+  };
+
     traceRunnerRef.current.cancel = false;
 
     try {
