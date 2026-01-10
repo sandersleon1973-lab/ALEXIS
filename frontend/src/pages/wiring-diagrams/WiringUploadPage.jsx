@@ -481,6 +481,17 @@ const WiringUploadPage = () => {
         };
         window.speechSynthesis.speak(utterance);
       } catch {
+          {!trainingMode && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setTrainingMode(true)}
+              data-testid="wiring-training-enter-button"
+            >
+              Training / Replay
+            </Button>
+          )}
+
         setIsSpeaking(false);
         resolve();
       }
