@@ -405,8 +405,8 @@ const WiringUploadPage = () => {
       setConversation((prev) => [...prev, alexisMessage]);
       setTechnicianTranscript("");
 
-      if (isTraceRequest && commandsPayload?.commands?.length) {
-        setStatus("TRACE MODE...");
+      if ((isTraceRequest || isDiagnoseRequest) && commandsPayload?.commands?.length) {
+        setStatus(isDiagnoseRequest ? "DIAGNOSIS MODE..." : "TRACE MODE...");
         runTraceCommands(commandsPayload, cleanedResponse);
         setStatus("LIVE - Diagram Assistance");
       } else {
