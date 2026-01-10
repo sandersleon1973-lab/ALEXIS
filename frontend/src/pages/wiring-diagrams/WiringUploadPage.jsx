@@ -178,6 +178,7 @@ const WiringUploadPage = () => {
     }
     liveWsRef.current = null;
     setLiveMode(false);
+    liveQueueRef.current = [];
   };
 
   const pidToExpected = (pid, value) => {
