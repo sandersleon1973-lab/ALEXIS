@@ -490,7 +490,13 @@ const WiringUploadPage = () => {
                   loading="Loading wiring diagram…"
                   error="Failed to load wiring diagram"
                 >
-                  <div className="relative" data-testid="wiring-upload-pdf-page-layer">
+                  <div
+                    className="relative"
+                    ref={pageLayerRef}
+                    onMouseUp={handleDiagramMouseUp}
+                    style={{ cursor: "crosshair" }}
+                    data-testid="wiring-upload-pdf-page-layer"
+                  >
                     <Page
                       pageNumber={currentPage}
                       scale={scale}
