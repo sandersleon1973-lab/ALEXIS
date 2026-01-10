@@ -312,6 +312,23 @@ const WiringUploadPage = () => {
     if (!file) return;
     setPdfError(null);
     setSelectedFile(file);
+
+  const loadTrainingScenario = (scenario) => {
+    setTrainingScenario(scenario);
+    setTrainingMode(true);
+    setSelectedFile(null);
+    setNumPages(null);
+    setCurrentPage(1);
+
+    // Load PDF immediately into viewer
+    try {
+      setSelectedFile(`${process.env.PUBLIC_URL}${scenario.diagram_url}`);
+      setStatus("TRAINING MODE");
+    } catch {
+      // noop
+    }
+  };
+
     setNumPages(null);
     setCurrentPage(1);
     setScale(1.0);
