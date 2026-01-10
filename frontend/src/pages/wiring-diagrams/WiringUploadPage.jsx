@@ -237,7 +237,9 @@ const WiringUploadPage = () => {
 
         const msg = `LIVE DATA (${pid})\nExpected: ${expectedInfo.expected}\nActual: ${value}${unit ? " " + unit : ""}\nResult: ${expectedInfo.interpretation.toUpperCase()}\nTimestamp: ${timestamp}`;
         setConversation((prev) => [...prev, { role: "alexis", text: msg }]);
-        await speakResponseWithPromise(`Live data ${pid}. Expected ${expectedInfo.expected}. Actual ${value} ${unit || ""}. Result ${expectedInfo.interpretation}.`);
+        await speakResponseWithPromise(
+          `Live data ${pid}. Expected ${expectedInfo.expected}. Actual ${value} ${unit || ""}. Result ${expectedInfo.interpretation}.`
+        );
 
         window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
       } finally {
@@ -249,13 +251,12 @@ const WiringUploadPage = () => {
     return () => clearInterval(id);
   }, [liveMode, currentPage]);
 
+  const armMicrophone = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop()); // Release immediately, just checking permission
+      stream.getTracks().forEach((t) => t.stop()); // Release immediately, just checking permission
       setMicReady(true);
-      console.log("Microphone armed and ready");
     } catch (err) {
-      console.error("Mic permission denied:", err);
       setMicReady(false);
       setSttError("Microphone access denied. Please allow microphone permission.");
     }
