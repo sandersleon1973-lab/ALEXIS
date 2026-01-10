@@ -685,8 +685,19 @@ const WiringUploadPage = () => {
       return;
     }
 
+    // Stop trace / live / diagnosis
+    if (lower === "stop" || lower.includes("stop trace") || lower.includes("stop live")) {
+      if (liveMode) disconnectLiveStream();
+      setDiagnoseMode(false);
+      setTraceMode(false);
+      traceRunnerRef.current.cancel = true;
+      window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
+      setTechnicianTranscript("");
+      return;
+    }
+
     // Stop trace
-    if (lower === "stop" || lower.includes("stop trace")) {
+    if (lower.includes("stop trace")) {
       setTraceMode(false);
       traceRunnerRef.current.cancel = true;
       window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
