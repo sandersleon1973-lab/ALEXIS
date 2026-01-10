@@ -696,15 +696,6 @@ const WiringUploadPage = () => {
       return;
     }
 
-    // Stop trace
-    if (lower.includes("stop trace")) {
-      setTraceMode(false);
-      traceRunnerRef.current.cancel = true;
-      window.dispatchEvent(new CustomEvent("ALEXIS_DIAGRAM_COMMAND", { detail: { command: "CLEAR_DIAGRAM" } }));
-      setTechnicianTranscript("");
-      return;
-    }
-
     // Default explain
     sendToAlexis(input);
   };
