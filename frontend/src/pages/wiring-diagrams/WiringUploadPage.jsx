@@ -36,6 +36,11 @@ const WiringUploadPage = () => {
   const [diagnoseMode, setDiagnoseMode] = useState(false);
 
 
+  const [liveMode, setLiveMode] = useState(false);
+  const liveWsRef = useRef(null);
+  const liveQueueRef = useRef([]);
+  const liveProcessingRef = useRef(false);
+
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
