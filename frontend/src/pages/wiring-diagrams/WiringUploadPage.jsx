@@ -300,6 +300,9 @@ const WiringUploadPage = () => {
     if (!commandsPayload?.commands || !Array.isArray(commandsPayload.commands)) return;
     if (traceRunnerRef.current.running) return;
 
+    const stepNarration = extractTraceStepNarration(narrationText);
+    let stepIndex = 0;
+
     traceRunnerRef.current.running = true;
     traceRunnerRef.current.cancel = false;
 
@@ -315,16 +318,25 @@ const WiringUploadPage = () => {
 
         if (cmd.command === "SHOW_ON_DIAGRAM") {
           dispatchDiagramCommand(cmd);
-          await new Promise((r) => setTimeout(r, 1200));
+
+          const say = stepNarration[stepIndex] || "";
+          stepIndex += 1;
+
+          if (say) {
+            await speakResponseWithPromise(say);
+          } else {
+            await new Promise((r) => setTimeout(r, 1200));
+          }
+
           // one step = one glow, then clear
           dispatchDiagramCommand({ command: "CLEAR_DIAGRAM" });
-          await new Promise((r) => setTimeout(r, 180));
+          await new Promise((r) => setTimeout(r, 220));
           continue;
         }
 
         if (cmd.command === "CLEAR_DIAGRAM") {
           dispatchDiagramCommand(cmd);
-          await new Promise((r) => setTimeout(r, 180));
+          await new Promise((r) => setTimeout(r, 220));
         }
       }
     } finally {
