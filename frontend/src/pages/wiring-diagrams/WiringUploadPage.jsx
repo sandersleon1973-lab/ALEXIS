@@ -375,6 +375,7 @@ const WiringUploadPage = () => {
   const sendToAlexis = async (text) => {
     if (!text.trim() || !sessionId) return;
     const isTraceRequest = text.includes("TRACE_MODE=ON") || traceMode;
+    const isDiagnoseRequest = text.includes("DIAGNOSE_MODE=ON") || diagnoseMode;
     setIsProcessing(true);
     setSttError(null);
 
