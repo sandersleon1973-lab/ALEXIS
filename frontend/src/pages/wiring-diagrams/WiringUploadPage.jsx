@@ -450,12 +450,18 @@ const WiringUploadPage = () => {
                   loading="Loading wiring diagram…"
                   error="Failed to load wiring diagram"
                 >
-                  <Page
-                    pageNumber={currentPage}
-                    scale={scale}
-                    renderTextLayer={true}
-                    renderAnnotationLayer={true}
-                  />
+                  <div className="relative" data-testid="wiring-upload-pdf-page-layer">
+                    <Page
+                      pageNumber={currentPage}
+                      scale={scale}
+                      renderTextLayer={true}
+                      renderAnnotationLayer={true}
+                    />
+                    <WiringDiagramTeachingController
+                      totalPages={numPages}
+                      setPageNumber={setCurrentPage}
+                    />
+                  </div>
                 </Document>
               </div>
             ) : (
