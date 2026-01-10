@@ -288,11 +288,8 @@ const WiringUploadPage = () => {
         setSessionId(sessionData.session_id);
         setStatus("LIVE - Diagram Assistance");
         
-        // Add initial ALEXIS greeting for diagram context
-        setConversation([{
-          role: "alexis",
-          text: "I'm ready to help you understand this wiring diagram. You can:\n\n• Ask me to explain any symbol or component\n• Request help tracing a specific circuit\n• Ask about connector pinouts or wire colors\n• Get guidance on reading schematic conventions\n\n"
-        }]);
+        // Initial state: viewer is ready. ALEXIS will auto-explain on click/trace/live requests.
+        setConversation([]);
       } else {
         setStatus("Offline");
       }
