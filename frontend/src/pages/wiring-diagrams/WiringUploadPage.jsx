@@ -12,6 +12,8 @@ import "react-pdf/dist/esm/Page/TextLayer.css";
 pdfjs.GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.min.js`;
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
+import TrainingModePanel from "@/pages/wiring-diagrams/TrainingModePanel";
+
 
 // Context for this page - DIAGRAM ASSISTANCE, not fault diagnosis
 const PAGE_CONTEXT = "diagram_assistance";
