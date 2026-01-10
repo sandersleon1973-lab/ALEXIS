@@ -205,7 +205,7 @@ const WiringUploadPage = () => {
     }
   };
 
-  const pidToTestPoint = (pid) => {
+  const pidToTestPoint = useCallback((pid) => {
     // SCREEN/DOM pixel demo mapping (center of page) – can be calibrated later
     // One test point at a time.
     const base = { x: 220, y: 220, width: 180, height: 90, page: currentPage };
