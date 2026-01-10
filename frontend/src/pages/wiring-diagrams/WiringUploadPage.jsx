@@ -103,7 +103,7 @@ const WiringUploadPage = () => {
         // Add initial ALEXIS greeting for diagram context
         setConversation([{
           role: "alexis",
-          text: "I'm ready to help you understand this wiring diagram. You can:\n\n• Ask me to explain any symbol or component\n• Request help tracing a specific circuit\n• Ask about connector pinouts or wire colors\n• Get guidance on reading schematic conventions\n\nWhich part of the diagram would you like me to explain?"
+          text: "I'm ready to help you understand this wiring diagram. You can:\n\n• Ask me to explain any symbol or component\n• Request help tracing a specific circuit\n• Ask about connector pinouts or wire colors\n• Get guidance on reading schematic conventions\n\n"
         }]);
       } else {
         setStatus("Offline");
