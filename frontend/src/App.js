@@ -6,7 +6,6 @@ import DashboardPage from "@/pages/dashboard/DashboardPage";
 import VisualDiagnosticsPage from "@/pages/visual-diagnostics/VisualDiagnosticsPage";
 import VoiceDiagnosticsPage from "@/pages/voice-diagnostics/VoiceDiagnosticsPage";
 import AboutAlexisPage from "@/pages/about/AboutAlexisPage";
-import WiringDiagramsPage from "@/pages/wiring-diagrams/WiringDiagramsPage";
 import WiringUploadPage from "@/pages/wiring-diagrams/WiringUploadPage";
 
 import PlaceholderPage from "@/pages/placeholders/PlaceholderPage";
@@ -65,8 +64,8 @@ function App() {
             path="/voice-diagnostics"
             element={<VoiceDiagnosticsPage />}
           />
-          <Route path="/wiring-diagrams" element={<WiringDiagramsPage />} />
           <Route path="/wiring-diagrams/upload" element={<WiringUploadPage />} />
+          <Route path="/wiring-diagrams" element={<WiringUploadPage />} />
           <Route path="/about-alexis" element={<AboutAlexisPage />} />
           <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
         </Route>

@@ -465,7 +465,7 @@ const WiringUploadPage = () => {
                 </Document>
               </div>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-slate-500">
+              <div className="h-full flex flex-col items-center justify-center text-slate-500" data-testid="wiring-upload-empty-state">
                 <div className="mx-auto mb-4 h-16 w-16 rounded-2xl border border-slate-800 bg-slate-900/40 flex items-center justify-center">
                   <span className="sr-only">PDF</span>
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-60">
