@@ -1,4 +1,11 @@
 /* Global app chrome for diagnostics dashboard */
+@keyframes alexisPulse {
+  0%   { box-shadow: 0 0 6px #00ffe0; }
+  50%  { box-shadow: 0 0 28px #00ffe0; }
+  100% { box-shadow: 0 0 6px #00ffe0; }
+}
+
+
 
 .App {
     height: 100%;
