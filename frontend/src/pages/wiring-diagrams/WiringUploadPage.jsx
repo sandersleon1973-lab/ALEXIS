@@ -297,10 +297,19 @@ const WiringUploadPage = () => {
       const alexisMessage = { role: "alexis", text: chatData.response };
       setConversation(prev => [...prev, alexisMessage]);
       setTechnicianTranscript("");
-      setStatus("ALEXIS is speaking...");
 
-      // Speak asynchronously so UI updates (chat bubble render) are not blocked
-      speakResponse(chatData.response);
+      const commandsPayload = extractAlexisCommands(chatData.response);
+      if (traceMode && commandsPayload?.commands?.length) {
+        setStatus("TRACE MODE...");
+        // Execute overlay commands; narration is already in the response text
+        runTraceCommands(commandsPayload);
+        // No TTS here; trace narration should be read by technician or can be upgraded later
+        setStatus("LIVE - Diagram Assistance");
+      } else {
+        setStatus("ALEXIS is speaking...");
+        // Speak asynchronously so UI updates (chat bubble render) are not blocked
+        speakResponse(chatData.response);
+      }
     } catch (err) {
       console.error("Chat error:", err);
       setConversation(prev => [...prev, { role: "alexis", text: "Error: Could not get response. Please try again." }]);
