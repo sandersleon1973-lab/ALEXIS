@@ -260,6 +260,18 @@ const WiringUploadPage = () => {
       // Send to ALEXIS with diagram_assistance context
       await sendToAlexis(sttData.transcript);
       
+
+  const extractTraceStepNarration = (narrationText) => {
+    // Expect numbered lines like: 1) ... 2) ...
+    const lines = (narrationText || "").split(/\n+/).map((l) => l.trim()).filter(Boolean);
+    const steps = [];
+    for (const l of lines) {
+      const m = l.match(/^\d+[\)|\.]\s+(.*)$/);
+      if (m && m[1]) steps.push(m[1].trim());
+    }
+    return steps;
+  };
+
     } catch (err) {
       console.error("STT error:", err);
       setSttError(`Speech recognition failed: ${err.message}`);
