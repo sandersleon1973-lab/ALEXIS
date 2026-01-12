@@ -1,0 +1,45 @@
+{
+  "diagnostic_sequence": [
+    {
+      "id": "check_battery_voltage",
+      "authority": "command",
+      "exit_condition": "battery_voltage_ok == true",
+      "cause": "low_system_voltage",
+      "eliminates": "battery_failure",
+      "explanation": {
+        "known": "Battery voltage must be stable for ECU operation.",
+        "matters": "Low system voltage invalidates all further diagnostics.",
+        "next": "Confirm battery voltage under load."
+      }
+    },
+    {
+      "id": "check_crank_signal",
+      "authority": "command",
+      "exit_condition": "crank_signal_present == true",
+      "cause": "no_engine_speed_signal",
+      "eliminates": "crank_sensor_failure",
+      "explanation": {
+        "known": "The ECU requires an engine speed signal to inject fuel.",
+        "matters": "Without a crank signal, the engine cannot start.",
+        "next": "Verify crankshaft position sensor signal integrity."
+      }
+    },
+    {
+      "id": "check_rail_pressure",
+      "authority": "advise",
+      "cause": "low_rail_pressure",
+      "eliminates": ["hp_pump_failure", "rail_pressure_regulator"],
+      "explanation": {
+        "known": "Measured rail pressure is within the required range.",
+        "matters": "Fuel pressure is not preventing engine start.",
+        "next": "Shift focus to injection timing or control."
+      }
+    },
+    {
+      "id": "technician_suspects_immobiliser",
+      "authority": "listen",
+      "technician_assertion": "immobiliser_active",
+      "evidence_key": "immobiliser_status"
+    }
+  ]
+}
