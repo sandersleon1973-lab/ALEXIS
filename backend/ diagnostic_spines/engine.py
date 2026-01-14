@@ -1,4 +1,5 @@
 from diagnostic_spines.spine_guards.assumption_guard import enforce_assumption_guard
+from diagnostic_spines.wiring_states import WiringStateMachine
 
 
 class SpineExecutionError(Exception):
@@ -32,6 +33,12 @@ class DiagnosticSpineEngine:
         # UI SIGNALING
         self.last_error = None
 
+        # WIRING INTELLIGENCE GOVERNOR (OWNED, NOT DRIVEN)
+        self.wiring_fsm = WiringStateMachine()
+
+    # -------------------------------------------------
+    # CURRENT STEP
+    # -------------------------------------------------
     def current_step(self) -> dict:
         if self.current_index >= len(self.sequence):
             raise SpineExecutionError("Diagnostic sequence completed.")
@@ -61,11 +68,10 @@ class DiagnosticSpineEngine:
                     f"Measurement '{key}' is None. Data unreliable."
                 )
 
-            if isinstance(value, (int, float)):
-                if value != value:  # NaN
-                    raise SpineExecutionError(
-                        f"Measurement '{key}' is NaN. Data unreliable."
-                    )
+            if isinstance(value, (int, float)) and value != value:
+                raise SpineExecutionError(
+                    f"Measurement '{key}' is NaN. Data unreliable."
+                )
 
             if isinstance(value, str) and value.strip() == "":
                 raise SpineExecutionError(
@@ -151,20 +157,26 @@ class DiagnosticSpineEngine:
             )
 
     # -------------------------------------------------
-    # UI SIGNALING
+    # UI SIGNALING (READ-ONLY WIRING STATE)
     # -------------------------------------------------
     def get_ui_state(self) -> dict:
+        step = None
+        try:
+            step = self.current_step()
+        except SpineExecutionError:
+            pass
+
         if self.last_error:
             return {
                 "state": "BLOCKED",
-                "step_id": self.current_step().get("id"),
+                "step_id": step.get("id") if step else None,
                 "explanation": self.last_explanation,
                 "error": self.last_error,
                 "eliminated_causes": list(self.eliminated_causes),
+                "wiring_state": self.wiring_fsm.state.name,
             }
 
-        step = self.current_step()
-        authority = step.get("authority", "advise")
+        authority = step.get("authority", "advise") if step else "advise"
 
         if authority == "command":
             state = "COMMAND_REQUIRED"
@@ -175,11 +187,15 @@ class DiagnosticSpineEngine:
 
         return {
             "state": state,
-            "step_id": step.get("id"),
+            "step_id": step.get("id") if step else None,
             "explanation": self.last_explanation,
             "eliminated_causes": list(self.eliminated_causes),
+            "wiring_state": self.wiring_fsm.state.name,
         }
 
+    # -------------------------------------------------
+    # ADVANCE DIAGNOSTIC
+    # -------------------------------------------------
     def advance(self, measured_data: dict) -> dict:
         self.last_error = None
 
@@ -195,7 +211,7 @@ class DiagnosticSpineEngine:
             enforce_assumption_guard(
                 spine_id=self.spine_id,
                 step=step,
-                context=self.context
+                context=self.context,
             )
 
             self._apply_negative_certainty(step)
